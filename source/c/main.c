@@ -1,5 +1,5 @@
 // Include defines for various pieces of the NES hardware
-#include "include.h"
+#include "main.h"
 
 
 

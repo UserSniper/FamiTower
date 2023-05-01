@@ -1,6 +1,5 @@
 // the background
-#include "c1.c";
-
+#include "include.h"
 
 
 //
