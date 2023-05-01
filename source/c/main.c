@@ -1,8 +1,5 @@
 // Include defines for various pieces of the NES hardware
-#include "main.h"
-#include "metasprites.h"
-#include "system-defines.h"
-#include "neslib.h"
+#include "include.h"
 
 //
 // Global Variables (zeropage) 
