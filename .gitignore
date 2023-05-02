@@ -17,3 +17,5 @@ graphics/*.rle.chr
 sound/music.asm
 sound/sfx.asm
 sound/sfx.s
+# The output
+rom
