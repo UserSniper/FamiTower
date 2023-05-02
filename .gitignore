@@ -1,4 +1,3 @@
-
 # Tools are installed by the download-dependencies sub-command
 tools/cc65
 tools/emulators
@@ -10,7 +9,6 @@ temp
 ./create-nes-game-win.exe
 ./create-nes-game
 ./create-nes-game-*
-*.nes
 # Run-length encoded files
 graphics/*.rle.nam
 graphics/*.rle.bin
