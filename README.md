@@ -1,5 +1,5 @@
 # PizzaTowerFamicom
-Pizza Tower Famicom is a demake of Pizza Tower on the Famicom in C. The goal is to have the following:
+Pizza Tower Famicom is a demake of Pizza Tower on the Famicom written in C. The goal is to have the following:
 - Title Screen
 - Floor 1
 - Full control scheme for Peppino
