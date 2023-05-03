@@ -10,6 +10,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Move things into the spots github CI expects them in
         run: "cp -a /root/. /github/home"
+      - name: Download Dependencies
+        run: create-nes-game download-dependencies
       - name: Build the game
         run: make build
       - name: Start xvfb 

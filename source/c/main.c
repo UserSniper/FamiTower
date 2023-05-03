@@ -22,32 +22,7 @@
 
 
 
-//Write the funny Italian man here
-const unsigned char Peppino_Idle[]={
 
-    -10,-24,0x05,0,
-    - 2,-24,0x07,0,
-      6,-24,0x09,0,
-    -21,- 8,0x0b,0,
-
-    -13,- 8,0x0d,0,
-    - 5,- 8,0x0f,0,
-      3,- 8,0x11,0,
-     11,- 8,0x13,0,
-
-    -21,  8,0x15,0,
-    -13,  8,0x17,0,
-    - 5,  8,0x19,0,
-      3,  8,0x1b,0,
-
-     11,  8,0x1d,0,
-    -16, 24,0x1f,0,
-    - 8, 24,0x21,0,
-      0, 24,0x23,0,
-    
-      8, 24,0x25,0,
-    0x80
-};
 
 
 
@@ -65,12 +40,10 @@ void main(void) {
 
 
 
-    // Get Controller 1
-    pad1 = pad_poll(0);
-
+    
 
     // Set the address of the ppu to $3f00 to set the background palette
-    vram_adr(0x3f00);
+    vram_adr(0x3F00);
 
 
 
@@ -85,16 +58,13 @@ void main(void) {
     vram_adr(0x2064);
 
     i = 0;
-    //while (welcomeMessage[i]) {
-        // Add 0x60 to the ascii value of each character, to get it to line up with where the ascii table is in our chr file
-        //vram_put(welcomeMessage[i] + 0x80);
-        //++i;
-    //}
+    while (welcomeMessage[i]) {
+        //Add 0x60 to the ascii value of each character, to get it to line up with where the ascii table is in our chr file
+        vram_put(welcomeMessage[i] + 0x80);
+        ++i;
+    }
 
 
-
-
-    
 
 
     // Set the scroll to 0,0
@@ -108,24 +78,34 @@ void main(void) {
 
 
     // Update variable used in unit tests
-    testVariable = 1;
-
+    testVariable = 0;
+    songid = 0;
 
 
     // Play the first song built into the rom. By default it is the title song from Shiru's game, Lan Master
-    music_play(0);
-
+    music_play(testVariable);
 
 
     // Infinite loop to end things
     while (1) {
         ppu_wait_nmi();
         
-        if (pad1 & PAD_A) { // If the user is pressing A, make a sound!
-            // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
-            sfx_play(0, 0);
-        }
+        // Get Controller 1
+        pad1_new = pad_trigger(0);
+        pad1 = pad_state(0);
 
+        if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
+            // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
+            ++songid;
+            if (songid > 0x07) {
+                songid = 0x00;
+            }
+            music_stop();
+            music_play(songid);
+        }
+        if (pad1_new & PAD_B) {
+            sfx_play(0,0);
+        }
 
         
         

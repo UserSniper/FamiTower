@@ -21,6 +21,6 @@ link:
 	$(info Linking...)
 	tools/cc65/bin/ld65 -v -o rom/pizza-tower-demo.nes -C config/ca65.cfg temp/crt0.o temp/main.c.o tools/cc65/lib/nes.lib --dbgfile rom/pizza-tower-demo.dbg 
 clean:
-#rm -R temp/
+	rm -R temp/
 
 .PHONY: build
