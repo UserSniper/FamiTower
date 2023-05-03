@@ -15,7 +15,6 @@ graphics/*.rle.bin
 graphics/*.rle.chr
 # Automatically generated music files
 sound/music.asm
-sound/sfx.asm
 sound/sfx.s
 # The output
 rom
