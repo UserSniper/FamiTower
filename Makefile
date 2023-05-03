@@ -7,7 +7,7 @@ build: compile assemble link clean
 get_dependencies:
 	$(info Installing cc65...)
 	mkdir -p "${CC65_DIR}"
-	wget -q -O- "${CC65_URL}" | tar -xz --strip-components=1 -C "${CC65_DIR}"
+	curl -L "${CC65_URL}" | tar -xz --strip-components=1 -C "${CC65_DIR}"
 	cd "${CC65_DIR}" && $(MAKE)
 
 compile:
