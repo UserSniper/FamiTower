@@ -12,15 +12,6 @@ get_dependencies:
 
 compile:
 	$(info Compling...)
-ifeq (,$(wildcard ./sound/sfx.asm))
-	tools/famitone2/nsf2data sound/sfx.nsf -ca65
-ifneq (,$(wildcard ./sound/sfx.s))
-	$(info nsf2data seems to have compiled to sfx.s instead of sfx.asm, copying...)
-	mv sound/sfx.s sound/sfx.asm
-else
-	$(wildcard ./sound/*)
-endif
-endif
 	mkdir -p temp
 	mkdir -p rom
 	"${CC65_DIR}/bin/cc65" -I . -Oi source/c/main.c --add-source --include-dir "${CC65_DIR}/include" -o temp/main.c.asm --debug-info 
