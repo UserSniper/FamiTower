@@ -88,13 +88,10 @@ void main(void) {
 
     // Infinite loop to end things
     while (1) {
+
         ppu_wait_nmi();
         
-        // Get Controller 1
-        pad1_new = pad_trigger(0);
-        pad1 = pad_state(0);
-
-        if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
+        if (pad1 & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
             ++songid;
             if (songid > 0x07) {

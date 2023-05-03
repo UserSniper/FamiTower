@@ -9,6 +9,8 @@
         "string_view": "c",
         "typeinfo": "c",
         "metasprites.h": "c",
-        "include.h": "c"
+        "include.h": "c",
+        "*.inc": "c",
+        "atomic": "c"
     }
 }
