@@ -83,13 +83,15 @@ void main(void) {
 
 
     // Play the first song built into the rom. By default it is the title song from Shiru's game, Lan Master
-    music_play(testVariable);
+    music_play(0);
 
 
     // Infinite loop to end things
     while (1) {
 
         ppu_wait_nmi();
+
+        pad1 = pad_poll(0);
         
         if (pad1 & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
