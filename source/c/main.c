@@ -88,7 +88,7 @@ void main(void) {
 
     // Infinite loop to end things
     while (1) {
-        ppu_wait_nmi();
+        
         
         // Get Controller 1
         pad1_new = pad_trigger(0);
@@ -108,7 +108,7 @@ void main(void) {
         }
 
         
-        
+        ppu_wait_nmi();
     }
 }
 
