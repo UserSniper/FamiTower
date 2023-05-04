@@ -9,27 +9,6 @@ ft_music_play:
 	rts									; Not playing, return
 :
 
-	;Display CPU time
-    LDA <PPU_MASK_VAR
-    AND #%11100111
-    STA $2001
-	
-	LDA #$3F
-	STA PPU_ADDR
-	LDA #$00
-	STA PPU_ADDR
-	STA PPU_DATA
-	
-	LDA #$3F
-	STA PPU_ADDR
-	LDA #$00
-	STA PPU_ADDR
-	STA PPU_ADDR
-	STA PPU_ADDR
-
-    LDA <PPU_MASK_VAR
-	STA $2001
-
 .ifdef USE_FDS
     lda #$00
     sta var_ch_ModEffWritten
@@ -253,28 +232,6 @@ ft_loop_channels:
 .ifdef USE_N163
     jsr ft_update_n163
 .endif
-
-	;Display CPU time
-    LDA <PPU_MASK_VAR
-    AND #%11100111
-    STA $2001
-	
-	LDA #$3F
-	STA PPU_ADDR
-	LDA #$00
-	STA PPU_ADDR
-	LDA #$0F
-	STA PPU_DATA
-	
-	LDA #$3F
-	STA PPU_ADDR
-	LDA #$00
-	STA PPU_ADDR
-	STA PPU_ADDR
-	STA PPU_ADDR
-
-    LDA <PPU_MASK_VAR
-	STA $2001
 
 	; End of music routine, return
 	rts
