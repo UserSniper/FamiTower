@@ -28,8 +28,8 @@ CTRL_PORT1  =$4016
 CTRL_PORT2  =$4017
 
 OAM_BUF     =$0200
-PAL_BUF     =$01c0
-
+PAL_BUF	    =$01c0
+VRAM_BUF	=$0700
 
 
 .segment "ZEROPAGE"
@@ -96,7 +96,10 @@ RLE_HIGH    =TEMP+1
 RLE_TAG     =TEMP+2
 RLE_BYTE    =TEMP+3
 
-
+;nesdoug code requires
+VRAM_INDEX:			.res 1
+META_PTR:			.res 2
+DATA_PTR:			.res 2
 
 .segment "CODE"
 

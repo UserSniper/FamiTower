@@ -107,6 +107,18 @@ void main(void) {
             sfx_play(0,0);
         }
         movement();
+        collision = check_collision(&Hitbox1,&Hitbox2);
+        // change the BG color, if sprites are touching
+        if (collision){
+            ppu_off();
+            pal_col(0, 0x30);
+            ppu_on_all();
+        }
+        else{
+            ppu_off();
+            pal_col(0, 0x0f);
+            ppu_on_all();
+        }
         draw_sprites();
     }
 }
@@ -163,7 +175,7 @@ void movement(void){
 }
 
 
-
+//doesnt' work fsr
 
 void test_collision(void){
 	collision = check_collision(&Hitbox1,&Hitbox2);
