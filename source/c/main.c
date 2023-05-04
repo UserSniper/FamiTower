@@ -110,14 +110,10 @@ void main(void) {
         collision = check_collision(&Hitbox1,&Hitbox2);
         // change the BG color, if sprites are touching
         if (collision){
-            ppu_off();
-            pal_col(0, 0x30);
-            ppu_on_all();
+            enable_grayscale();
         }
         else{
-            ppu_off();
-            pal_col(0, 0x0f);
-            ppu_on_all();
+            disable_grayscale();
         }
         draw_sprites();
     }

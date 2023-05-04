@@ -245,7 +245,19 @@ void __fastcall__ memfill(void *dst,unsigned char value,unsigned int len);
 
 void __fastcall__ delay(unsigned char frames);
 
+//alexmush's debugging additions
 
+//Enable PPU grayscale mode
+
+void __fastcall__ enable_grayscale(void);
+
+//Toggle PPU grayscale mode
+
+void __fastcall__ toggle_grayscale(void);
+
+//Disable PPU grayscale mode
+
+void __fastcall__ disable_grayscale(void);
 
 #define PAD_A           0x01
 #define PAD_B           0x02
