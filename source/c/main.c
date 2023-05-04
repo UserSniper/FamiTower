@@ -166,7 +166,7 @@ void movement(void){
 
 
 void test_collision(void){
-		
+	collision = check_collision(&Hitbox1,&Hitbox2);
 	// change the BG color, if sprites are touching
 	if (collision){
 		pal_col(0,0x30); 
