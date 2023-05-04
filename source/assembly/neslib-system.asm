@@ -136,5 +136,5 @@ detectNTSC:
     jmp _main           ;no parameters
 
     ; Famistudio driver
-    .include "famistudio_driver/famistudio_ca65.s"
+    .include "famistudio_ca65.s"
     
