@@ -31,16 +31,16 @@ USE_DPCM = 1			; Enable DPCM channel (currently broken, leave enabled to avoid t
 RELOCATE_MUSIC= 1		; Enable if music data must be relocated
 
 NTSC_PERIOD_TABLE = 1	; Enable this to include the NTSC period table
-PAL_PERIOD_TABLE = 1	; Enable this to include the PAL period table
+PAL_PERIOD_TABLE = 0	; Enable this to include the PAL period table
 
 ENABLE_ROW_SKIP = 1		; Enable this to add code for seeking to a row > 0 when using skip command
 
-;USE_VRC6 = 1 			; Enable this to include VRC6 code
-;USE_MMC5 = 1			; Enable this to include MMC5 code
-;USE_VRC7 = 1			; Enable this to include VRC7 code
-;USE_FDS = 1			; Enable this to include FDS code
-;USE_N163 = 1			; Enable this to include N163 code
-;USE_5B = 1				; Enable this to include 5B code
+;USE_VRC6 = 0 			; Enable this to include VRC6 code
+;USE_MMC5 = 0			; Enable this to include MMC5 code
+;USE_VRC7 = 0			; Enable this to include VRC7 code
+;USE_FDS = 0			; Enable this to include FDS code
+;USE_N163 = 0			; Enable this to include N163 code
+;USE_5B = 0				; Enable this to include 5B code
 
 ;ENABLE_SFX = 1			; Enable this to enable sound effect support (not yet working)
 
