@@ -122,17 +122,7 @@ neslib_nmi:
 
 @skipNtsc:
 
-    ;Display CPU time
-    LDA <PPU_MASK_VAR
-    EOR #%00000001
-	STA PPU_MASK
     jsr famistudio_update
-	;Display CPU time
-    LDA <PPU_MASK_VAR
-	STA PPU_MASK
-
-
-
 
     ;pla
     ;tay
