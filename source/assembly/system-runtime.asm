@@ -272,7 +272,6 @@ FT_SFX_STREAMS          = 4 ;number of sound effects played at once, 1..4
 .include "./neslib-system.asm"
 .include "./neslib.asm"
 
-
 ;
 ; Music and sound data
 ; 
