@@ -165,4 +165,3 @@ detectNTSC:
 
     ; Famitracker driver uses .s for file extension, but is otherwise normal asm
     .include "famitracker_driver/driver.s"
-    

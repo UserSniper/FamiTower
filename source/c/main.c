@@ -70,7 +70,7 @@ void main(void) {
     // Set the scroll to 0,0
     scroll(0, 0);
 
-    
+    draw_sprites();
 
     // Turn the screen back on
     ppu_on_all();
@@ -91,13 +91,12 @@ void main(void) {
 
         ppu_wait_nmi();
 
-        pad1_new = pad_trigger(0);
-        pad1 = pad_state(0);
+        pad1 = pad_poll(0);
         
-        if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
+        if (pad1 & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
             ++songid;
-            if (songid > 0x06) {
+            if (songid > 0x07) {
                 songid = 0x00;
             }
             music_stop();
@@ -106,8 +105,9 @@ void main(void) {
         if (pad1_new & PAD_B) {
             sfx_play(0,0);
         }
-        movement();
-        draw_sprites();
+
+        
+        
     }
 }
 
@@ -124,10 +124,12 @@ void draw_sprites(void){
     oam_size(1);
     bank_spr(1);
 
-    oam_meta_spr(Hitbox1.x,Hitbox1.y,0x04,Peppino_Idle);
+    oam_meta_spr(0x7F,0x97,0x04,Peppino_Idle);
 
-	oam_meta_spr(Hitbox2.x, Hitbox2.y,0x48, Peppino_Idle);
+
 }
+
+
 
 
 
@@ -145,36 +147,21 @@ void draw_bg(void){
 
 
 
-// player movement scripts
-void movement(void){
-    if(pad1 & PAD_LEFT){
-		--Hitbox1.x;
-	}
-	else if (pad1 & PAD_RIGHT){
-		++Hitbox1.x;
-	}
-	if(pad1 & PAD_UP){
-		--Hitbox1.y;
-	}
-	else if (pad1 & PAD_DOWN){
-		++Hitbox1.y;
-	}
-
-}
 
 
 
 
-void test_collision(void){
-		
-	// change the BG color, if sprites are touching
-	if (collision){
-		pal_col(0,0x30); 
-	}
-	else{
-		pal_col(0,0x00);
-	}
-}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
