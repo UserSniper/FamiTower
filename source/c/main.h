@@ -38,8 +38,16 @@
 unsigned char testVariable;
 unsigned char c_map[240];
 unsigned char songid;
+struct BoxGuy {
+	unsigned char x;
+	unsigned char y;
+	unsigned char width;
+	unsigned char height;
+};
 
-
+struct BoxGuy Hitbox1 = {20,24,15,15};
+struct BoxGuy Hitbox2 = {70,24,15,15};
+struct BoxGuy Hitbox3 = {120,24,15,15};
 
 //
 // Constant variables
@@ -65,3 +73,4 @@ void draw_sprites(void);
 void movement(void);
 void bg_collision(void);
 void check_start(void);
+unsigned char check_collision(void * object1, void * object2);
