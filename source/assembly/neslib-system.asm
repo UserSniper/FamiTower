@@ -54,31 +54,6 @@ PPU_CTRL_VAR:       .res 1
 PPU_CTRL_VAR1:      .res 1
 PPU_MASK_VAR:       .res 1
 RAND_SEED:          .res 2
-FT_TEMP:            .res 3
-
-MUSIC_PLAY:         .res 1
-ft_music_addr:      .res 2
-
-BUF_4000:           .res 1
-BUF_4001:           .res 1
-BUF_4002:           .res 1
-BUF_4003:           .res 1
-BUF_4004:           .res 1
-BUF_4005:           .res 1
-BUF_4006:           .res 1
-BUF_4007:           .res 1
-BUF_4008:           .res 1
-BUF_4009:           .res 1
-BUF_400A:           .res 1
-BUF_400B:           .res 1
-BUF_400C:           .res 1
-BUF_400D:           .res 1
-BUF_400E:           .res 1
-BUF_400F:           .res 1
-
-PREV_4003:          .res 1
-PREV_4007:          .res 1
-
 TEMP:               .res 11
 
 PAD_BUF     =TEMP+1
@@ -143,17 +118,14 @@ detectNTSC:
 
     jsr _ppu_off
 
-    lda #$ff                ;previous pulse period MSB, to not write it when not changed
-    sta PREV_4003
-    sta PREV_4007
-    
-    jsr _music_stop
+    lda #$01                ;NTSC
+    ldx #<music_data_
+    ldy #>music_data_
+    jsr famistudio_init
 
-.if(FT_SFX_ENABLE)
-    ldx #<sounds_data
-    ldy #>sounds_data
-    jsr FamiToneSfxInit
-.endif
+    ldx #<sounds
+    ldy #>sounds
+    jsr famistudio_sfx_init
 
     lda #$fd
     sta <RAND_SEED
@@ -166,6 +138,6 @@ detectNTSC:
 
     jmp _main           ;no parameters
 
-    ; Famitracker driver uses .s for file extension, but is otherwise normal asm
-    .include "famitracker_driver/driver.s"
+    ; Famistudio driver
+    .include "famistudio_ca65.s"
     

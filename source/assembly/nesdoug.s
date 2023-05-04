@@ -129,7 +129,6 @@ _get_frame_count:
 	rts
 
 
-
 PTR2 = TEMP+2 ;and TEMP+3
 
 ;unsigned char __fastcall__ check_collision(void * object1, void * object2);
