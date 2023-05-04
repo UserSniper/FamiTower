@@ -52,8 +52,6 @@ void main(void) {
         vram_put(palette[i]);
     }
 
-
-
     // Write the address $2064 to the ppu, where we can start drawing text on the screen
     vram_adr(0x2064);
 
@@ -83,7 +81,7 @@ void main(void) {
 
 
     // Play the first song built into the rom. By default it is the title song from Shiru's game, Lan Master
-    music_play(0);
+    famistudio_music_play(0);
 
 
     // Infinite loop to end things
@@ -100,11 +98,11 @@ void main(void) {
             if (songid > 0x06) {
                 songid = 0x00;
             }
-            music_stop();
-            music_play(songid);
+            famistudio_music_stop();
+            famistudio_music_play(songid);
         }
         if (pad1_new & PAD_B) {
-            sfx_play(0,0);
+            famistudio_sfx_play(0, FAMISTUDIO_SFX_CH0);
         }
         movement();
         draw_sprites();

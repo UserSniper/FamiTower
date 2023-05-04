@@ -129,16 +129,6 @@ _get_frame_count:
 	rts
 	
 	
-	
-	
-;void __fastcall__ set_music_speed(unsigned char tempo);
-_set_music_speed:
-	sta FT_SONG_SPEED
-	rts
-	
-	
-
-
 
 
 PTR2 = TEMP+2 ;and TEMP+3

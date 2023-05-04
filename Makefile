@@ -14,7 +14,7 @@ compile:
 	$(info Compling...)
 	mkdir -p temp
 	mkdir -p rom
-	"${CC65_DIR}/bin/cc65" -I . -Oi source/c/main.c --add-source --include-dir "${CC65_DIR}/include" -o temp/main.c.asm --debug-info 
+	"${CC65_DIR}/bin/cc65" -v -I . -Oi source/c/main.c --add-source --include-dir "${CC65_DIR}/include" -o temp/main.c.asm --debug-info 
 
 assemble:
 	$(info Assembling...)
