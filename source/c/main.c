@@ -37,7 +37,7 @@ void main(void) {
     ppu_off();
 
     draw_bg();
-    
+    which_bg = 0;
 
     // Set the address of the ppu to $3f00 to set the background palette
     vram_adr(0x3F00);
@@ -142,39 +142,20 @@ void draw_sprites(void){
 void draw_bg(void){
     ppu_off();
 
-    p_maps = Collision_Maps[0];
+    p_maps = Collision_Maps[which_bg];
     memcpy (c_map, p_maps, 240);
 
     vram_adr(NAMETABLE_A);
 
 	// draw a row of tiles
-	for(temp_y = 0; temp_y < 15; ++temp_y){
-		for(temp_x = 0; temp_x < 16; ++temp_x){
-			temp1 = (temp_y << 4) + temp_x;
+	for(temp_y = 0; temp_y < 30; ++temp_y){
+		for(temp_x = 0; temp_x < 32; ++temp_x){
+			temp1 = (temp_y << 3) + temp_x;
 
-			if(c_map[temp1]){
-				vram_put(c_map[temp1]); // wall
-				vram_put(c_map[temp1]);
-			}
-			else{
-				vram_put(0); // blank
-				vram_put(0);
-			}
+			vram_put(c_map[temp1]);
 		}
 		
-		// draw a second row of tiles
-		for(temp_x = 0; temp_x < 16; ++temp_x){
-			temp1 = (temp_y << 4) + temp_x;
-
-			if(c_map[temp1]){
-				vram_put(c_map[temp1]); // wall
-				vram_put(c_map[temp1]);
-			}
-			else{
-				vram_put(0); // blank
-				vram_put(0);
-			}
-		}
+		
 	}
     ppu_on_all();
 }
@@ -191,14 +172,69 @@ void movement(void){
 	else if (pad1 & PAD_RIGHT){
 		++Hitbox1.x;
 	}
+    bg_collision();
+    if(collision_R) --Hitbox1.x;
+	if(collision_L) ++Hitbox1.x;
+
 	if(pad1 & PAD_UP){
 		--Hitbox1.y;
 	}
 	else if (pad1 & PAD_DOWN){
 		++Hitbox1.y;
 	}
+    bg_collision();
+    if(collision_U) --Hitbox1.y;
+	if(collision_D) ++Hitbox1.y;
 
 }
+
+void bg_collision(){
+	// sprite collision with backgrounds
+	
+	collision_L = 0;
+	collision_R = 0;
+	collision_U = 0;
+	collision_D = 0;
+	
+	temp_x = Hitbox1.x; // left side
+	temp_y = Hitbox1.y; // top side
+	
+	if(temp_y >= 0xf0) return;
+	// y out of range
+	
+	coordinates = (temp_x >> 4) + (temp_y & 0xf0); // upper left
+	if(c_map[coordinates]){ // find a corner in the collision map
+		++collision_L;
+		++collision_U;
+	}
+	
+	temp_x = Hitbox1.x + Hitbox1.width; // right side
+	
+	coordinates = (temp_x >> 4) + (temp_y & 0xf0); // upper right
+	if(c_map[coordinates]){
+		++collision_R;
+		++collision_U;
+	}
+	
+	temp_y = Hitbox1.y + Hitbox1.height; // bottom side
+	if(temp_y >= 0xf0) return;
+	// y out of range
+	
+	coordinates = (temp_x >> 4) + (temp_y & 0xf0); // bottom right
+	if(c_map[coordinates]){
+		++collision_R;
+		++collision_D;
+	}
+	
+	temp_x = Hitbox1.x; // left side
+	
+	coordinates = (temp_x >> 4) + (temp_y & 0xf0); // bottom left
+	if(c_map[coordinates]){
+		++collision_L;
+		++collision_D;
+	}
+}
+
 
 
 //doesnt' work fsr
