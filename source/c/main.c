@@ -37,9 +37,6 @@ void main(void) {
     ppu_off();
 
     draw_bg();
-
-
-
     
 
     // Set the address of the ppu to $3f00 to set the background palette
@@ -53,7 +50,7 @@ void main(void) {
     }
 
     // Write the address $2064 to the ppu, where we can start drawing text on the screen
-    vram_adr(0x2064);
+    /*vram_adr(0x2064);
 
     i = 0;
     while (welcomeMessage[i]) {
@@ -61,7 +58,7 @@ void main(void) {
         vram_put(welcomeMessage[i] + 0x80);
         ++i;
     }
-
+    */
 
 
 
@@ -114,6 +111,8 @@ void main(void) {
             disable_grayscale();
         }
         draw_sprites();
+
+        gray_line();
     }
 }
 
@@ -143,8 +142,41 @@ void draw_sprites(void){
 void draw_bg(void){
     ppu_off();
 
+    p_maps = Collision_Maps[0];
+    memcpy (c_map, p_maps, 240);
 
+    vram_adr(NAMETABLE_A);
 
+	// draw a row of tiles
+	for(temp_y = 0; temp_y < 15; ++temp_y){
+		for(temp_x = 0; temp_x < 16; ++temp_x){
+			temp1 = (temp_y << 4) + temp_x;
+
+			if(c_map[temp1]){
+				vram_put(c_map[temp1]); // wall
+				vram_put(c_map[temp1]);
+			}
+			else{
+				vram_put(0); // blank
+				vram_put(0);
+			}
+		}
+		
+		// draw a second row of tiles
+		for(temp_x = 0; temp_x < 16; ++temp_x){
+			temp1 = (temp_y << 4) + temp_x;
+
+			if(c_map[temp1]){
+				vram_put(c_map[temp1]); // wall
+				vram_put(c_map[temp1]);
+			}
+			else{
+				vram_put(0); // blank
+				vram_put(0);
+			}
+		}
+	}
+    ppu_on_all();
 }
 
 
