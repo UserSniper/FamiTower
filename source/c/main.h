@@ -45,8 +45,8 @@ struct BoxGuy {
 	unsigned char height;
 };
 
-struct BoxGuy Hitbox1 = {20,24,15,15};
-struct BoxGuy Hitbox2 = {70,24,15,15};
+struct BoxGuy Hitbox1 = {20,24,8,32};
+struct BoxGuy Hitbox2 = {70,24,8,32};
 struct BoxGuy Hitbox3 = {120,24,15,15};
 
 //
