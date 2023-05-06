@@ -83,7 +83,7 @@
 ;======================================================================================================================
 
 .define FAMISTUDIO_CA65_ZP_SEGMENT   ZEROPAGE
-.define FAMISTUDIO_CA65_RAM_SEGMENT  FS_RAM
+.define FAMISTUDIO_CA65_RAM_SEGMENT  BSS
 .define FAMISTUDIO_CA65_CODE_SEGMENT CODE
 
 ;======================================================================================================================
