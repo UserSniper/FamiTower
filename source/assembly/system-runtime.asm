@@ -21,16 +21,34 @@
 ;
 .segment "HEADER"
 
-    INES_MAPPER = 4 ; 4 = mmc3 (tkrom)
-    INES_MIRROR = 0 ; 0 = horizontal mirroring, 1 = vertical mirroring
-    INES_SRAM   = 1 ; 1 = battery backed SRAM at $6000-7FFF
+    NES2_0_IDENTIFIER = %00001000
+    MAPPER = 4 ; 4 = MMC3
+    SUBMAPPER = 0 ; Standard
+    MIRRORING = 8 ; 0 = horizontal mirroring, 1 = vertical mirroring, 8 = hardwired 4-screen 
+    PRG_BANK_COUNT = 4 ; 16k PRG chunk count
+    CHR_BANK_COUNT = 32 ; 8k CHR chunk count
+    SRAM   = 1 ; 1 = battery backed SRAM at $6000-7FFF
+    TRAINER = 0 ; unneeded
+    CONSOLE_TYPE = 0 ; Standard NES/Famicom
+    PRG_RAM_COUNT = 0 ;
+    PRG_NVRAM_COUNT = 7 ; 64 << 7 = 8KB - the standard for MMC3
+    CHR_RAM_COUNT = 0 ; TODO: 12 ; 64 << 12 = 256KB - exactly 32 banks
+    CHR_NVRAM_COUNT = 0 ; 
+    CPU_PPU_TIMING = 0 ; NTSC NES/Famicom
+    HARDWARE_TYPE = 0; Unused
+    MISC_ROMS = 0 ; No misc ROMs
+    DEF_EXP_DEVICE = 0 ; Unspecified
 
     .byte 'N', 'E', 'S', $1A ; ID
-    .byte 4 ; 16k PRG chunk count
-    .byte 32 ; 8k CHR chunk count
-    .byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)
-    .byte (INES_MAPPER & %11110000)
-    .byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
+    .byte (PRG_BANK_COUNT & $FF)
+    .byte (CHR_BANK_COUNT & $FF)
+    .byte MIRRORING | (SRAM << 1) | (TRAINER << 2) | ((MAPPER & $00F) << 4)
+    .byte (MAPPER & $0F0) | CONSOLE_TYPE | NES2_0_IDENTIFIER
+    .byte ((MAPPER & $F00) >> 8) | SUBMAPPER << 4
+    .byte ((PRG_BANK_COUNT & $F00) >> 8) | ((CHR_BANK_COUNT & $F00) >> 4)
+    .byte PRG_RAM_COUNT | (PRG_NVRAM_COUNT << 4)
+    .byte CHR_RAM_COUNT | (CHR_NVRAM_COUNT << 4)
+    .byte CPU_PPU_TIMING, HARDWARE_TYPE, MISC_ROMS, DEF_EXP_DEVICE
 
 ;
 ; C Symbols from the engine and linker

@@ -129,9 +129,9 @@ void draw_sprites(void){
     oam_size(1);
     bank_spr(1);
 
-    oam_meta_spr(Hitbox1.x,Hitbox1.y,0x04,Peppino_Idle);
+    oam_meta_spr(Hitbox1.x-8, Hitbox1.y, 0x04, Peppino_Idle);
 
-	oam_meta_spr(Hitbox2.x, Hitbox2.y,0x48, Peppino_Idle);
+	oam_meta_spr(Hitbox2.x-8, Hitbox2.y, 0x48, Peppino_Idle);
 }
 
 
