@@ -83,6 +83,12 @@ void main(void) {
 
     // Infinite loop to end things
     while (1) {
+        if (peppino_taunt_timer > 0) --peppino_taunt_timer;
+
+
+
+
+
 
         ppu_wait_nmi();
 
@@ -98,8 +104,17 @@ void main(void) {
             famistudio_music_stop();
             famistudio_music_play(songid);
         }
+
+
+
         if (pad1_new & PAD_B) {
-            famistudio_sfx_play(0, FAMISTUDIO_SFX_CH0);
+            if (peppino_taunt_timer = 0){
+                peppino_taunt_timer = 15;
+                peppino_anim = 1;
+                famistudio_sfx_play(0, FAMISTUDIO_SFX_CH0);
+            } else peppino_anim = 0;
+            
+
         }
         movement();
         collision = check_collision(&Hitbox1,&Hitbox2);
@@ -129,7 +144,7 @@ void draw_sprites(void){
     oam_size(1);
     bank_spr(1);
 
-    oam_meta_spr(Hitbox1.x-8, Hitbox1.y, 0x04, Peppino_Idle);
+    oam_meta_spr(Hitbox1.x-8, Hitbox1.y, 0x04, Peppino_ANIM[peppino_anim]);
 
 	oam_meta_spr(Hitbox2.x-8, Hitbox2.y, 0x48, Peppino_Idle);
 }
