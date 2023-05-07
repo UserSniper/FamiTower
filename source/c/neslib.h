@@ -239,6 +239,8 @@ void __fastcall__ toggle_grayscale(void);
 
 void __fastcall__ disable_grayscale(void);
 
+void __fastcall__ draw_bg_asm(void);
+
 #define PAD_A           0x01
 #define PAD_B           0x02
 #define PAD_SELECT      0x04

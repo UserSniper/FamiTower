@@ -36,7 +36,7 @@ void main(void) {
     // Turn off the screen
     ppu_off();
 
-    draw_bg();
+    draw_bg_asm();
     which_bg = 0;
 
     // Set the address of the ppu to $3f00 to set the background palette
@@ -138,28 +138,23 @@ void draw_sprites(void){
 
 
 
-
 void draw_bg(void){
     ppu_off();
 
     p_maps = Collision_Maps[which_bg];
-    memcpy (c_map, p_maps, 240);
 
     vram_adr(NAMETABLE_A);
-
+    temp1 = 0;
 	// draw a row of tiles
-	for(temp_y = 0; temp_y < 30; ++temp_y){
-		for(temp_x = 0; temp_x < 32; ++temp_x){
-			temp1 = (temp_y << 3) + temp_x;
+	for(temp_y = 30; temp_y != 0; --temp_y){
+		for(temp_x = 32; temp_x != 0; --temp_x){
+			++temp1;
 
-			vram_put(c_map[temp1]);
+			vram_put(p_maps[temp1]);
 		}
-		
-		
 	}
     ppu_on_all();
 }
-
 
 
 
