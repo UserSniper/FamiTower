@@ -1,13 +1,16 @@
 //Write the funny Italian man here
 const unsigned char Peppino_Idle[]={
-	  4,  0,0x31,0,
-	 12,  0,0x33,0,
-	  0, 16,0x35,0,
-	  8, 16,0x37,0,
 
-	 16, 16,0x39,0,
+	- 4,- 8,0x31,0,
+	  4,- 8,0x33,0,
+	- 8,  8,0x35,0,
+	  0,  8,0x37,0,
+
+	  8,  8,0x39,0,
 	0x80
 };
+
+
 
 const unsigned char Peppino_Taunt[]={
 

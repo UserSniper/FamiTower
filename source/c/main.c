@@ -84,7 +84,7 @@ void main(void) {
     // Infinite loop to end things
     while (1) {
         if (peppino_taunt_timer > 0) --peppino_taunt_timer;
-
+        peppino_anim = 0;
 
 
 
@@ -108,11 +108,10 @@ void main(void) {
 
 
         if (pad1_new & PAD_B) {
-            if (peppino_taunt_timer = 0){
+            if (peppino_taunt_timer == 0){
                 peppino_taunt_timer = 15;
-                peppino_anim = 1;
                 famistudio_sfx_play(0, FAMISTUDIO_SFX_CH0);
-            } else peppino_anim = 0;
+            }
             
 
         }
@@ -125,6 +124,7 @@ void main(void) {
         else{
             disable_grayscale();
         }
+        detect_animation();
         draw_sprites();
 
         gray_line();
@@ -268,7 +268,10 @@ void test_collision(void){
 
 
 
+void detect_animation(void){
+    if (peppino_taunt_timer > 0) {peppino_anim = 1; return;} else peppino_anim = 0;
 
+}
 
 
 

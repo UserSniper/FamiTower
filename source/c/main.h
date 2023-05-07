@@ -77,3 +77,4 @@ void movement(void);
 void bg_collision(void);
 void check_start(void);
 unsigned char check_collision(void * object1, void * object2);
+void detect_animation(void);
