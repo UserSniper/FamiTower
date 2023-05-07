@@ -10,6 +10,7 @@ sounds:
 	.word @ntsc
 @ntsc:
 	.word @sfx_ntsc_sfx_1
+	.word @sfx_ntsc_sfx_2
 
 @sfx_ntsc_sfx_1:
 	.byte $82,$01,$81,$ab,$80,$f5,$89,$f0,$01,$80,$f8,$01,$80,$f0,$02,$81
@@ -29,5 +30,7 @@ sounds:
 	.byte $00,$81,$e1,$80,$f3,$01,$80,$f4,$01,$82,$01,$81,$3f,$80,$f5,$01
 	.byte $80,$f8,$01,$81,$0c,$80,$f3,$01,$80,$f4,$01,$81,$7c,$80,$f5,$01
 	.byte $80,$f8,$01,$81,$3f,$80,$f3,$01,$80,$f4,$00
+@sfx_ntsc_sfx_2:
+	.byte $89,$f0,$00
 
 .export sounds
