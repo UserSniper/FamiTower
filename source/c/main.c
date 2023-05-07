@@ -110,7 +110,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 peppino_taunt_timer = 15;
-                famistudio_sfx_play(0, FAMISTUDIO_SFX_CH0);
+                famistudio_sfx_play(1, FAMISTUDIO_SFX_CH0);
             }
             
 
