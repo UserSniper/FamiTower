@@ -12,7 +12,7 @@ const unsigned char Peppino_Idle[]={
 
 
 
-const unsigned char Peppino_Taunt1[]={
+const unsigned char Peppino_Taunt05[]={
 
 	-16,  8,0x27,0,
 	- 8,  5,0x29,0,
@@ -25,7 +25,21 @@ const unsigned char Peppino_Taunt1[]={
 	0x80
 };
 
-const unsigned char Peppino_Taunt2[]={
+const unsigned char Peppino_Taunt06[]={
+
+	-10,- 8,0x4d,0,
+	- 2,- 8,0x4f,0,
+	  6,- 8,0x51,0,
+	-12,  8,0x53,0,
+
+	- 4,  8,0x55,0,
+	  4,  8,0x57,0,
+	 12,  7,0x59,0,
+	- 6,- 4,0x5b,1,
+	0x80
+};
+
+const unsigned char Peppino_Taunt12[]={
 
 	- 8,- 7,0x3f,0,
 	- 8,  9,0x41,0,

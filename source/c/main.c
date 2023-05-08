@@ -41,9 +41,6 @@ void main(void) {
 
     // Set the address of the ppu to $3f00 to set the background palette
     vram_adr(0x3F00);
-
-
-
     // Write the background palette, byte-by-byte.
     for (i = 0; i != 32; ++i) {
         vram_put(palette[i]);
@@ -268,7 +265,7 @@ void test_collision(void){
 
 void detect_animation(void){
     
-    if (peppino_taunt_timer > 0) {peppino_anim = (rand >> 7)+1; return;} else peppino_anim = 0;
+    if (peppino_taunt_timer > 0) {peppino_anim = (rand >> 6); return;} else peppino_anim = 0;
 
 }
 
