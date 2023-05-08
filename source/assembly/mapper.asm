@@ -126,16 +126,12 @@
     .byte 00
 
 ; Every bank needs a reset method at the start to get the mapper to start in the right state. So, do that.
-.segment "ROM_A_00" 
+.segment "ROM_BANK_02" 
     jmp reset
-.segment "ROM_B_00" 
+.segment "ROM_BANK_03" 
     jmp reset
-.segment "ROM_A_01" 
+.segment "ROM_BANK_04" 
     jmp reset
-.segment "ROM_B_01" 
-    jmp reset
-.segment "ROM_A_02" 
-    jmp reset
-.segment "ROM_B_02" 
+.segment "DMC_BANK_00" 
     jmp reset
 

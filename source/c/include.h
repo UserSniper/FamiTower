@@ -5,3 +5,4 @@
 #include "mapper.h"
 #include "nesdoug.h"
 #include "famistudio_cc65.h"
+#include "../../graphics/graphics.config.h"

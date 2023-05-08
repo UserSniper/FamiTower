@@ -27,13 +27,13 @@
     SUBMAPPER = 0 ; Standard
     MIRRORING = 8 ; 0 = horizontal mirroring, 1 = vertical mirroring, 8 = hardwired 4-screen 
     PRG_BANK_COUNT = 4 ; 16k PRG chunk count
-    CHR_BANK_COUNT = 32 ; 8k CHR chunk count
+    CHR_BANK_COUNT = 0 ; 8k CHR chunk count
     SRAM   = 1 ; 1 = battery backed SRAM at $6000-7FFF
     TRAINER = 0 ; unneeded
     CONSOLE_TYPE = 0 ; Standard NES/Famicom
     PRG_RAM_COUNT = 0 ;
     PRG_NVRAM_COUNT = 7 ; 64 << 7 = 8KB - the standard for MMC3
-    CHR_RAM_COUNT = 0 ; TODO: 12 ; 64 << 12 = 256KB - exactly 32 banks
+    CHR_RAM_COUNT =  12 ; 64 << 12 = 256KB - exactly 32 banks
     CHR_NVRAM_COUNT = 0 ; 
     CPU_PPU_TIMING = 0 ; NTSC NES/Famicom
     HARDWARE_TYPE = 0; Unused
