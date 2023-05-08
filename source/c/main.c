@@ -43,7 +43,7 @@ void main(void) {
     vram_adr(0x3F00);
     // Write the background palette, byte-by-byte.
     for (i = 0; i != 32; ++i) {
-        vram_put(palette[i]);
+        POKE(PPU_DATA,palette[i]);
     }
 
     // Write the address $2064 to the ppu, where we can start drawing text on the screen
@@ -74,7 +74,7 @@ void main(void) {
     songid = 0;
 
 
-    // Play the first song built into the rom. By default it is the title song from Shiru's game, Lan Master
+    // Play the first song built into the rom.
     famistudio_music_play(0);
 
 
@@ -265,7 +265,13 @@ void test_collision(void){
 
 void detect_animation(void){
     
-    if (peppino_taunt_timer > 0) {peppino_anim = (rand >> 6); return;} else peppino_anim = 0;
+    if (peppino_taunt_timer > 0) 
+    {
+        peppino_anim = (rand & 0x01) | ((rand & 0x08) >> 2);
+        if (peppino_anim == 0) {peppino_anim |= 1 | (rand & 0x02);}     //Force peppino animation to not be idle when taunt
+        return;
+    } 
+    else peppino_anim = 0;
 
 }
 

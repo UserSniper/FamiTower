@@ -59,7 +59,7 @@ _draw_bg_asm:
 	lda     (ptr1),y
 	STA     <ptr1
     LDA     <_temp2
-    sta     ptr1+1
+    sta     <ptr1+1
 ; vram_adr(NAMETABLE_A);
 	ldx     #$20
     stx PPU_ADDR
