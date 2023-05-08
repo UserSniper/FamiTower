@@ -1,29 +1,9 @@
 // Include defines for various pieces of the NES hardware
 #include "main.h"
 
-
-
-
-
-
-
-
-
 //
 // The fucking nametable
 // screw you, ld65. here's the nametable.
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //
@@ -35,6 +15,8 @@
 void main(void) {
     // Turn off the screen
     ppu_off();
+
+    mmc3_set_prg_bank_1(1);
 
     draw_bg_asm();
     which_bg = 0;
@@ -81,11 +63,6 @@ void main(void) {
     // Infinite loop to end things
     while (1) {
         if (peppino_taunt_timer > 0) --peppino_taunt_timer;
-        peppino_anim = 0;
-
-
-
-
 
         ppu_wait_nmi();
 
@@ -265,13 +242,18 @@ void test_collision(void){
 
 void detect_animation(void){
     
-    if (peppino_taunt_timer > 0) 
+    if (peppino_taunt_timer == 15) 
     {
-        peppino_anim = (rand & 0x01) | ((rand & 0x08) >> 2);
-        if (peppino_anim == 0) {peppino_anim |= 1 | (rand & 0x02);}     //Force peppino animation to not be idle when taunt
+        temp1 = (rand & 0x01) | ((rand & 0x08) | ((rand & 0xA0) >> 3) >> 1);
+        if (temp1 >= 11) {temp1 = ((temp1 - 10) << 1) | ((rand & 0x02) >> 1);}
+        if (temp1 == peppino_previous_taunt_anim) {temp1 ^= 0x07;}
+        peppino_previous_taunt_anim = temp1;
+        ++temp1;
+        if (temp1 >= 4) {temp1 = 3;}
+        peppino_anim = temp1;
         return;
     } 
-    else peppino_anim = 0;
+    else if (peppino_taunt_timer == 0) peppino_anim = 0;
 
 }
 

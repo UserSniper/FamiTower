@@ -4,7 +4,7 @@
 
 //
 // Global Variables (zeropage) 
-// Small, frequently-used variables should go in this space. There are only around 250 bytes to go around, so choose wisely!
+// Small, frequently-used variables should go in this space. There are only 256 bytes to go around, so choose wisely!
 //
 #pragma bss-name(push, "ZEROPAGE")
     unsigned char i;
@@ -15,7 +15,6 @@
     unsigned char collision_R;
     unsigned char collision_U;
     unsigned char collision_D;
-    unsigned char which_bg;
     const unsigned char * p_maps;
     unsigned char coordinates;
     unsigned char temp1;
@@ -24,8 +23,7 @@
     unsigned char temp4;
     unsigned char temp_x;
     unsigned char temp_y;
-    unsigned char peppino_anim;
-    unsigned char peppino_taunt_timer;
+
 
 
 
@@ -40,6 +38,10 @@ unsigned char testVariable;
 unsigned char c_map[240];
 unsigned char songid;
 unsigned char rand;
+unsigned char which_bg;
+unsigned char peppino_anim;
+unsigned char peppino_taunt_timer;
+unsigned char peppino_previous_taunt_anim;
 struct BoxGuy {
 	unsigned char x;
 	unsigned char y;
