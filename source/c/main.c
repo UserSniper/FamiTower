@@ -16,10 +16,22 @@ void main(void) {
     // Turn off the screen
     ppu_off();
 
+    mmc3_set_2kb_chr_bank_0(0);
+    mmc3_set_2kb_chr_bank_1(2);
+    mmc3_set_1kb_chr_bank_0(4);
+    mmc3_set_1kb_chr_bank_1(5);
+    mmc3_set_1kb_chr_bank_2(6);
+    mmc3_set_1kb_chr_bank_3(7);
     mmc3_set_prg_bank_1(1);
+    vram_adr(0x0000);
+    vram_write((unsigned char *)background_graphics, 0x2000);
 
-    draw_bg_asm();
+    mmc3_set_prg_bank_1(0);
     which_bg = 0;
+    vram_adr(NAMETABLE_A);
+    vram_write((unsigned char *)Collision_Maps[which_bg], 1024);
+
+
 
     // Set the address of the ppu to $3f00 to set the background palette
     vram_adr(0x3F00);
@@ -90,6 +102,7 @@ void main(void) {
             
 
         }
+
         movement();
         collision = check_collision(&Hitbox1,&Hitbox2);
         // change the BG color, if sprites are touching
