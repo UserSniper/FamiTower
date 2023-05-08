@@ -109,6 +109,7 @@ void main(void) {
 
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
+                rand = rand8();
                 famistudio_sfx_sample_play(1);
                 peppino_taunt_timer = 15;
             }
@@ -176,6 +177,8 @@ void draw_bg(void){
 
 // player movement scripts
 void movement(void){
+    
+    if(peppino_taunt_timer > 0) return;
     if(pad1 & PAD_LEFT){
 		--Hitbox1.x;
 	}
@@ -264,7 +267,8 @@ void test_collision(void){
 
 
 void detect_animation(void){
-    if (peppino_taunt_timer > 0) {peppino_anim = 1; return;} else peppino_anim = 0;
+    
+    if (peppino_taunt_timer > 0) {peppino_anim = (rand >> 7)+1; return;} else peppino_anim = 0;
 
 }
 

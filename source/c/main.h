@@ -39,7 +39,7 @@
 unsigned char testVariable;
 unsigned char c_map[240];
 unsigned char songid;
-
+unsigned char rand;
 struct BoxGuy {
 	unsigned char x;
 	unsigned char y;
@@ -56,7 +56,7 @@ struct BoxGuy Hitbox3 = {120,24,15,15};
 // Anything with const in front of it will go into write-only prg instead of the very limited ram we have.
 //
 const unsigned char * const Collision_Maps[] = {c1};
-const unsigned char * const Peppino_ANIM[] = {Peppino_Idle, Peppino_Taunt};
+const unsigned char * const Peppino_ANIM[] = {Peppino_Idle, Peppino_Taunt1, Peppino_Taunt2};
 
 const unsigned char welcomeMessage[] = "Pizza Tower";
 
