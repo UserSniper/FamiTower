@@ -188,11 +188,11 @@ FAMISTUDIO_USE_SLIDE_NOTES       = 1
 
 ; Must be enabled if any song uses slide notes on the noise channel too. 
 ; More information at: https://famistudio.org/doc/pianoroll/#slide-notes
-; FAMISTUDIO_USE_NOISE_SLIDE_NOTES = 1
+FAMISTUDIO_USE_NOISE_SLIDE_NOTES = 1
 
 ; Must be enabled if any song uses the vibrato speed/depth effect track. 
 ; More information at: https://famistudio.org/doc/pianoroll/#vibrato-depth-speed
-; FAMISTUDIO_USE_VIBRATO           = 1
+FAMISTUDIO_USE_VIBRATO           = 1
 
 ; Must be enabled if any song uses arpeggios (not to be confused with instrument arpeggio envelopes, those are always
 ; supported).
@@ -205,7 +205,7 @@ FAMISTUDIO_USE_DUTYCYCLE_EFFECT  = 1
 ; Must be enabled if any song uses the DPCM delta counter. Only makes sense if DPCM samples
 ; are enabled (FAMISTUDIO_CFG_DPCM_SUPPORT).
 ; More information at: (TODO)
-; FAMISTUDIO_USE_DELTA_COUNTER     = 1
+FAMISTUDIO_USE_DELTA_COUNTER     = 1
 
 ; Must be enabled if your project uses more than 1 bank of DPCM samples.
 ; When using this, you must implement the "famistudio_dpcm_bank_callback" callback 

@@ -5,9 +5,9 @@
 .endif
 
 music_data_:
-	.byte 10
+	.byte 8
 	.word @instruments
-	.word @samples-5
+	.word @samples-4
 	.word @song0ch0,@song0ch1,@song0ch2,@song0ch3,@song0ch4,307,256 ; 00 : Time for a Smackdown! 1
 	.word @song1ch0,@song1ch1,@song1ch2,@song1ch3,@song1ch4,307,256 ; 01 : Pizza Deluxe! 1
 	.word @song2ch0,@song2ch1,@song2ch2,@song2ch3,@song2ch4,307,256 ; 02 : Mondays 1
@@ -16,8 +16,6 @@ music_data_:
 	.word @song5ch0,@song5ch1,@song5ch2,@song5ch3,@song5ch4,307,256 ; 05 : Oregano Mirage 1
 	.word @song6ch0,@song6ch1,@song6ch2,@song6ch3,@song6ch4,288,240 ; 06 : A Grain of Bread in a Grain of Sand 1
 	.word @song7ch0,@song7ch1,@song7ch2,@song7ch3,@song7ch4,307,256 ; 07 : bye bye there! 1
-	.word @song8ch0,@song8ch1,@song8ch2,@song8ch3,@song8ch4,307,256 ; 08 : sfx 1
-	.word @song9ch0,@song9ch1,@song9ch2,@song9ch3,@song9ch4,307,256 ; 09 : sfx 2
 
 .export music_data_
 .global FAMISTUDIO_DPCM_PTR
@@ -110,11 +108,11 @@ music_data_:
 	.byte $f0,$7f,$00,$00
 
 @samples:
-	.byte $1a+.lobyte(FAMISTUDIO_DPCM_PTR),$0c,$0e,$40,$00 ; 00 Rgimm kick.dmc (Pitch:14)
-	.byte $1a+.lobyte(FAMISTUDIO_DPCM_PTR),$0c,$0f,$40,$00 ; 01 Rgimm kick.dmc (Pitch:15)
-	.byte $1e+.lobyte(FAMISTUDIO_DPCM_PTR),$43,$0f,$40,$00 ; 02 taunt (Pitch:15)
-	.byte $0e+.lobyte(FAMISTUDIO_DPCM_PTR),$2f,$07,$40,$00 ; 03 untitled.dmc (Pitch:7)
-	.byte $00+.lobyte(FAMISTUDIO_DPCM_PTR),$34,$08,$40,$00 ; 04 untitled1.dmc (Pitch:8)
+	.byte $1a+.lobyte(FAMISTUDIO_DPCM_PTR),$0c,$0e,$40 ; 00 Rgimm kick.dmc (Pitch:14)
+	.byte $1a+.lobyte(FAMISTUDIO_DPCM_PTR),$0c,$0f,$40 ; 01 Rgimm kick.dmc (Pitch:15)
+	.byte $1e+.lobyte(FAMISTUDIO_DPCM_PTR),$43,$0f,$40 ; 02 taunt (Pitch:15)
+	.byte $0e+.lobyte(FAMISTUDIO_DPCM_PTR),$2f,$07,$40 ; 03 untitled.dmc (Pitch:7)
+	.byte $00+.lobyte(FAMISTUDIO_DPCM_PTR),$34,$08,$40 ; 04 untitled1.dmc (Pitch:8)
 
 @song0ch0:
 	.byte $45, $06
@@ -885,54 +883,3 @@ music_data_:
 @song7ch4loop:
 	.byte $df, $df, $df, $df, $df, $df, $df, $df, $df, $df, $df, $df, $42
 	.word @song7ch4loop
-@song8ch0:
-	.byte $45, $0a
-@song8ch0loop:
-@song8ref4:
-	.byte $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $9f, $42
-	.word @song8ch0loop
-@song8ch1:
-@song8ch1loop:
-	.byte $41, $10
-	.word @song8ref4
-	.byte $42
-	.word @song8ch1loop
-@song8ch2:
-@song8ch2loop:
-	.byte $41, $10
-	.word @song8ref4
-	.byte $42
-	.word @song8ch2loop
-@song8ch3:
-@song8ch3loop:
-	.byte $41, $10
-	.word @song8ref4
-	.byte $42
-	.word @song8ch3loop
-@song8ch4:
-@song8ch4loop:
-	.byte $41, $10
-	.word @song8ref4
-	.byte $42
-	.word @song8ch4loop
-@song9ch0:
-	.byte $45, $0a
-@song9ch0loop:
-	.byte $85, $42
-	.word @song9ch0loop
-@song9ch1:
-@song9ch1loop:
-	.byte $85, $42
-	.word @song9ch1loop
-@song9ch2:
-@song9ch2loop:
-	.byte $85, $42
-	.word @song9ch2loop
-@song9ch3:
-@song9ch3loop:
-	.byte $85, $42
-	.word @song9ch3loop
-@song9ch4:
-@song9ch4loop:
-	.byte $51, $40, $03, $81, $51, $80, $00, $42
-	.word @song9ch4loop

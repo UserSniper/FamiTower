@@ -96,7 +96,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 rand = rand8();
-                famistudio_sfx_sample_play(1);
+                famistudio_sfx_sample_play(3);
                 peppino_taunt_timer = 15;
             }
             
