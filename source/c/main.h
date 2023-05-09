@@ -58,7 +58,7 @@ struct BoxGuy Hitbox3 = {120,24,15,15};
 // Anything with const in front of it will go into write-only prg instead of the very limited ram we have.
 //
 const unsigned char * const Collision_Maps[] = {c1};
-const unsigned char * const Peppino_ANIM[] = {Peppino_Idle, Peppino_Taunt05, Peppino_Taunt06, Peppino_Taunt12};
+const unsigned char * const Peppino_ANIM[] = {Peppino_idle08, Peppino_taunt01, Peppino_taunt05, Peppino_taunt06, Peppino_taunt12};
 
 const unsigned char welcomeMessage[] = "Pizza Tower";
 
@@ -70,7 +70,7 @@ const unsigned char palette[32]={
     0x0f,0x16,0x16,0x16,
     
     0x0f,0x0f,0x37,0x30,
-    0x0f,0x16,0x16,0x16,
+    0x10,0x16,0x15,0x27,
     0x0f,0x16,0x16,0x16,
     0x0f,0x16,0x16,0x16
     };

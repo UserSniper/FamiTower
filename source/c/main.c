@@ -134,7 +134,7 @@ void draw_sprites(void){
 
     oam_meta_spr(Hitbox1.x, Hitbox1.y, 0x04, Peppino_ANIM[peppino_anim]);
 
-	oam_meta_spr(Hitbox2.x, Hitbox2.y, 0x48, Peppino_Idle);
+	oam_meta_spr(Hitbox2.x, Hitbox2.y, 0x48, Peppino_idle08);
 }
 
 
@@ -262,7 +262,7 @@ void detect_animation(void){
         if (temp1 == peppino_previous_taunt_anim) {temp1 ^= 0x07;}
         peppino_previous_taunt_anim = temp1;
         ++temp1;
-        if (temp1 >= 4) {temp1 = 3;}
+        if (temp1 >= 5) {temp1 = 1;}
         peppino_anim = temp1;
         return;
     } 
