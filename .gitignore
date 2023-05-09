@@ -1,8 +1,5 @@
 # Tools are installed by the download-dependencies sub-command
-tools/cc65
-tools/emulators
-tools/nes-test
-tools/famitone2
+tools
 temp
 # If you have this tool in the folder, don't commit it!
 ./create-nes-game.exe
