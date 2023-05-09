@@ -6,7 +6,9 @@ song_hmm_look_what_u_done_did_you_found_a_secret_v2_1 = 4
 song_oregano_mirage_1 = 5
 song_a_grain_of_bread_in_a_grain_of_sand_1 = 6
 song_bye_bye_there_1 = 7
-song_max = 8
+song_sfx_1 = 8
+song_dpcm_force_include = 9
+song_max = 10
 
 .if SONG_STRINGS
 song_strings:
@@ -18,4 +20,6 @@ song_strings:
 .asciiz "Oregano Mirage 1"
 .asciiz "A Grain of Bread in a Grain of Sand 1"
 .asciiz "bye bye there! 1"
+.asciiz "sfx 1"
+.asciiz "DPCM force include"
 .endif
