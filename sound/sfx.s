@@ -9,12 +9,15 @@ sounds:
 	.word @ntsc
 	.word @ntsc
 @ntsc:
-	.word @sfx_ntsc_sfx_1
-	.word @sfx_ntsc_sfx_2
+	.word @sfx_ntsc_sfx_dash_1
+	.word @sfx_ntsc_sfx_dash2_1
+	.word @sfx_ntsc_sfx_taunt_1
 
-@sfx_ntsc_sfx_1:
+@sfx_ntsc_sfx_dash_1:
 	.byte $89,$f0,$00
-@sfx_ntsc_sfx_2:
+@sfx_ntsc_sfx_dash2_1:
+	.byte $89,$f0,$00
+@sfx_ntsc_sfx_taunt_1:
 	.byte $89,$f0,$00
 
 .export sounds

@@ -12,35 +12,50 @@ const unsigned char Peppino_idle08[]={
 
 const unsigned char Peppino_taunt01[]={
 
-	- 6,- 8,0x0b,0,
-	  0,-12,0x0d,0,
-	  8,- 8,0x0f,0,
-	- 8,  8,0x11,0,
+	- 7,- 8,0x0b,0,
+	- 1,-12,0x0d,0,
+	  7,- 8,0x0f,0,
+	- 9,  8,0x11,0,
 
-	  0,  4,0x13,0,
-	  8,  8,0x15,0,
-	 16,  0,0x17,0,
-	- 5,-13,0x19,1,
+	- 1,  4,0x13,0,
+	  7,  8,0x15,0,
+	 15,  0,0x17,0,
+	- 6,-13,0x19,1,
 
-	  3,-20,0x1b,1,
-	  1,  8,0x1d,1,
+	  2,-20,0x1b,1,
+	  0,  8,0x1d,1,
 	0x80
-
 };
 
 const unsigned char Peppino_taunt02[]={
 
-	- 8,  4,0x1f,0,
-	  0,- 8,0x21,0,
-	  8,- 8,0x23,0,
-	 16,- 8,0x25,0,
+	-12,  4,0x1f,0,
+	- 4,- 8,0x21,0,
+	  4,- 8,0x23,0,
+	 12,- 8,0x25,0,
 
-	  0,  8,0x27,0,
-	  8,  8,0x29,0,
-	 16,  8,0x2b,0,
-	  4,-13,0x2d,1,
+	- 4,  8,0x27,0,
+	  4,  8,0x29,0,
+	 12,  8,0x2b,0,
+	  1,-13,0x5f,1,
 	0x80
+};
 
+const unsigned char Peppino_taunt04[]={
+
+	-16,  8,0x4d,0,
+	- 8,  8,0x4f,0,
+	  0,  8,0x51,0,
+	  8,  8,0x53,0,
+
+	 16,  8,0x55,0,
+	- 8,- 8,0x57,0,
+	  0,- 8,0x59,0,
+	  8,- 8,0x5b,0,
+
+	 16,- 8,0x5d,0,
+	  9,-12,0x5f,1,
+	0x80
 };
 
 const unsigned char Peppino_taunt05[]={
@@ -54,7 +69,6 @@ const unsigned char Peppino_taunt05[]={
 	  8,  8,0x39,0,
 	 16,- 1,0x3b,0,
 	0x80
-
 };
 
 const unsigned char Peppino_taunt06[]={
@@ -69,7 +83,6 @@ const unsigned char Peppino_taunt06[]={
 	 12,  7,0x49,0,
 	- 6,- 4,0x4b,1,
 	0x80
-
 };
 
 const unsigned char Peppino_taunt12[]={
@@ -83,6 +96,5 @@ const unsigned char Peppino_taunt12[]={
 	  8,  9,0x6f,0,
 	 16,- 7,0x67,0,
 	0x80
-
 };
 
