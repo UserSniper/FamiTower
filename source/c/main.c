@@ -262,7 +262,7 @@ void detect_animation(void){
         if (temp1 == peppino_previous_taunt_anim) {temp1 ^= 0x07;}
         peppino_previous_taunt_anim = temp1;
         ++temp1;
-        if (temp1 >= 5) {temp1 = 1;}
+        if (temp1 >= 6) {temp1 = 2;}
         peppino_anim = temp1;
         return;
     } 
