@@ -44,61 +44,53 @@
         rts
 
 
-    ; Store mirroring value to mmc1 register
+    ; Store mirroring value to mmc3 register
     mmc3_set_prg_bank_0:
     _mmc3_set_prg_bank_0:
-        ldx MMC3_REG_SEL_PRG_BANK_0
-        jsr mmc3_internal_set_bank
-        rts
+        ldx #MMC3_REG_SEL_PRG_BANK_0
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_prg_bank_0
 
     mmc3_set_prg_bank_1:
     _mmc3_set_prg_bank_1:
         ldx #MMC3_REG_SEL_PRG_BANK_1
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_prg_bank_1
 
     mmc3_set_2kb_chr_bank_0:
     _mmc3_set_2kb_chr_bank_0:
         ldx #MMC3_REG_SEL_2KB_CHR_0
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_2kb_chr_bank_0
 
     mmc3_set_2kb_chr_bank_1:
     _mmc3_set_2kb_chr_bank_1:
         ldx #MMC3_REG_SEL_2KB_CHR_1
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_2kb_chr_bank_1
 
     mmc3_set_1kb_chr_bank_0:
     _mmc3_set_1kb_chr_bank_0:
         ldx #MMC3_REG_SEL_1KB_CHR_0
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_1kb_chr_bank_0
 
     mmc3_set_1kb_chr_bank_1:
     _mmc3_set_1kb_chr_bank_1:
         ldx #MMC3_REG_SEL_1KB_CHR_1
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_1kb_chr_bank_1
 
     mmc3_set_1kb_chr_bank_2:
     _mmc3_set_1kb_chr_bank_2:
         ldx #MMC3_REG_SEL_1KB_CHR_2
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_1kb_chr_bank_2
 
     mmc3_set_1kb_chr_bank_3:
     _mmc3_set_1kb_chr_bank_3:
         ldx #MMC3_REG_SEL_1KB_CHR_3
-        jsr mmc3_internal_set_bank
-        rts
+        jmp mmc3_internal_set_bank
     .export _mmc3_set_1kb_chr_bank_3
 
     mmc3_set_mirroring:
@@ -117,8 +109,7 @@
         lda #0
         jsr mmc3_set_prg_bank_0
         lda #1
-        jsr mmc3_set_prg_bank_1
-        rts
+        jmp mmc3_set_prg_bank_1
 
 .segment "RODATA_2"
     ; This section isn't defined in all roms, so put something there to quiet a warning
@@ -130,8 +121,9 @@
     jmp reset
 .segment "ROM_BANK_03" 
     jmp reset
-.segment "ROM_BANK_04" 
-    jmp reset
 .segment "DMC_BANK_00" 
-    jmp reset
+    FAMISTUDIO_DPCM_OFF:
+    .incbin "../../sound/music_bank0.dmc"
+.segment "DMC_BANK_01"
+    .incbin "../../sound/music_bank1.dmc"
 

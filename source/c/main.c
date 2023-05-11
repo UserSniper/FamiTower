@@ -96,7 +96,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 rand = rand8();
-                famistudio_sfx_sample_play(3);
+                famistudio_sfx_sample_play(0x2a);
                 peppino_taunt_timer = 15;
             }
             
@@ -262,7 +262,7 @@ void detect_animation(void){
         if (temp1 == peppino_previous_taunt_anim) {temp1 ^= 0x07;}
         peppino_previous_taunt_anim = temp1;
         ++temp1;
-        if (temp1 >= 6) {temp1 = 2;}
+        if (temp1 >= 7) {temp1 = 6;}
         peppino_anim = temp1;
         return;
     } 

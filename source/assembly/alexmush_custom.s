@@ -1,4 +1,5 @@
     .export _enable_grayscale, _toggle_grayscale, _disable_grayscale
+    .export famistudio_dpcm_bank_callback
 
 .SEGMENT "CODE"
 
@@ -31,3 +32,10 @@ _disable_grayscale:
     sta PPU_MASK
     rts
 
+famistudio_dpcm_bank_callback:
+    TAY
+    LDA @lookup_table, y
+    LDX #MMC3_REG_SEL_PRG_BANK_0
+    JMP mmc3_internal_set_bank
+@lookup_table:
+    .byte $04, $05

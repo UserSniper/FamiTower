@@ -282,11 +282,6 @@
 ; Includes all initialization for the used library (neslib)
 ;
 
-.segment "PRG_DMC"
-FAMISTUDIO_DPCM_OFF:
-     .incbin "../../sound/music.dmc"
-    
-
 .include "./neslib-system.asm"
 .include "./neslib.asm"
 
