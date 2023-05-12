@@ -1,5 +1,6 @@
     .export _enable_grayscale, _toggle_grayscale, _disable_grayscale
     .export famistudio_dpcm_bank_callback
+    .export _oam_meta_spr_hflipped
 
 .SEGMENT "CODE"
 
@@ -39,3 +40,63 @@ famistudio_dpcm_bank_callback:
     JMP mmc3_internal_set_bank
 @lookup_table:
     .byte $04, $05
+
+;unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x,unsigned char y,unsigned char sprid,const unsigned char *data);
+
+_oam_meta_spr_hflipped:
+
+    sta <PTR
+    stx <PTR+1
+
+    ldy #2      ;three popa calls replacement, performed in reversed order
+    lda (sp),y
+    dey
+    sta <SCRX
+    lda (sp),y
+    dey
+    sta <SCRY
+    lda (sp),y
+    tax
+
+@1:
+
+    lda (PTR),y     ;x offset
+    cmp #$80
+    beq @2
+    iny
+    eor #$FF
+    clc
+    ADC <SCRX
+    SEC
+    sbc #$08
+    sta OAM_BUF+3,x
+    lda (PTR),y     ;y offset
+    iny
+    clc
+    adc <SCRY
+    sta OAM_BUF+0,x
+    lda (PTR),y     ;tile
+    iny
+    sta OAM_BUF+1,x
+    lda (PTR),y     ;attribute
+    INY
+    ora #$40
+    sta OAM_BUF+2,x
+    inx
+    inx
+    inx
+    inx
+    jmp @1
+
+@2:
+
+    lda <sp
+    adc #2          ;carry is always set here, so it adds 3
+    sta <sp
+    bcc @3
+    inc <sp+1
+
+@3:
+
+    txa
+    rts

@@ -5,7 +5,6 @@
 // The fucking nametable
 // screw you, ld65. here's the nametable.
 
-
 //
 // Main entrypoint
 // This is where your game will start running. It should essentially be an endless loop in most
@@ -15,7 +14,7 @@
 void main(void) {
     // Turn off the screen
     ppu_off();
-
+    //Do a CHR ROM equivalent (TODO: actual usefulness for CHR RAM)
     mmc3_set_2kb_chr_bank_0(0);
     mmc3_set_2kb_chr_bank_1(2);
     mmc3_set_1kb_chr_bank_0(4);
@@ -31,8 +30,6 @@ void main(void) {
     vram_adr(NAMETABLE_A);
     vram_write((unsigned char *)Collision_Maps[which_bg], 1024);
 
-
-
     // Set the address of the ppu to $3f00 to set the background palette
     vram_adr(0x3F00);
     // Write the background palette, byte-by-byte.
@@ -40,38 +37,15 @@ void main(void) {
         POKE(PPU_DATA,palette[i]);
     }
 
-    // Write the address $2064 to the ppu, where we can start drawing text on the screen
-    /*vram_adr(0x2064);
-
-    i = 0;
-    while (welcomeMessage[i]) {
-        //Add 0x60 to the ascii value of each character, to get it to line up with where the ascii table is in our chr file
-        vram_put(welcomeMessage[i] + 0x80);
-        ++i;
-    }
-    */
-
-
-
     // Set the scroll to 0,0
     scroll(0, 0);
-
-    
 
     // Turn the screen back on
     ppu_on_all();
 
-
-
-    // Update variable used in unit tests
-    testVariable = 0;
     songid = 0;
-
-
     // Play the first song built into the rom.
     famistudio_music_play(0);
-
-
     // Infinite loop to end things
     while (1) {
         if (peppino_taunt_timer > 0) --peppino_taunt_timer;
@@ -131,7 +105,9 @@ void draw_sprites(void){
     oam_clear();
     oam_size(1);
     bank_spr(1);
-
+    if (direction & 0x01)
+    oam_meta_spr_hflipped(Hitbox1.x+Hitbox1.width, Hitbox1.y, 0x04, Peppino_ANIM[peppino_anim]);
+    else
     oam_meta_spr(Hitbox1.x, Hitbox1.y, 0x04, Peppino_ANIM[peppino_anim]);
 
 	oam_meta_spr(Hitbox2.x, Hitbox2.y, 0x48, Peppino_idle08);
@@ -168,9 +144,11 @@ void movement(void){
     if(peppino_taunt_timer > 0) return;
     if(pad1 & PAD_LEFT){
 		--Hitbox1.x;
+        direction |= 0x01;
 	}
 	else if (pad1 & PAD_RIGHT){
 		++Hitbox1.x;
+        direction &= ~0x01;
 	}
     bg_collision();
     if(collision_R) --Hitbox1.x;

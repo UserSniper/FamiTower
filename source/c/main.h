@@ -34,7 +34,7 @@
 //
 // EXAMPLE: 
 // unsigned char myBigBufferArray[32];
-unsigned char testVariable;
+unsigned char direction;
 unsigned char c_map[240];
 unsigned char songid;
 unsigned char rand;
