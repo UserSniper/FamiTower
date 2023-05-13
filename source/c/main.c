@@ -145,6 +145,7 @@ void movement(void){
     if(pad1 & PAD_LEFT){
 		--Hitbox1.x;
         direction |= 0x01;
+        famistudio_sfx_sample_play(0x2a);
 	}
 	else if (pad1 & PAD_RIGHT){
 		++Hitbox1.x;
