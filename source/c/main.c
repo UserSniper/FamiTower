@@ -111,6 +111,7 @@ void draw_sprites(void){
     oam_meta_spr(Hitbox1.x, Hitbox1.y, 0x04, Peppino_ANIM[peppino_anim]);
 
 	oam_meta_spr(Hitbox2.x, Hitbox2.y, 0x48, Peppino_idle08);
+    oam_meta_spr(Hitbox3.x, Hitbox3.y, 0x5C, Peppino_idle08);
 }
 
 
