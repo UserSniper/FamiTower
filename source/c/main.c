@@ -73,9 +73,26 @@ void main(void) {
                 famistudio_sfx_sample_play(0x2a);
                 peppino_taunt_timer = 15;
             }
-            
-
         }
+        if (pad1_new & PAD_START) {
+            if (peppino_taunt_timer == 0){
+                ++temp3;
+            }
+        }
+        if (pad1_new & PAD_SELECT) {
+            if (peppino_taunt_timer == 0){
+                --temp3;
+            }
+        }
+
+
+
+
+
+
+
+
+
 
         movement();
         collision = check_collision(&Hitbox1,&Hitbox2);
@@ -88,16 +105,10 @@ void main(void) {
         }
         detect_animation();
         draw_sprites();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
-        waste_time_lol();
+        temp4=0;
+        for(temp4=temp3; temp4!=0; ++temp4) {
+            waste_time_lol();
+        };
         gray_line();
     }
 }
