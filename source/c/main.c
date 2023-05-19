@@ -123,6 +123,7 @@ void draw_bg(void){
 
     p_maps = Collision_Maps[which_bg];
 
+
     vram_adr(NAMETABLE_A);
     temp1 = 0;
 	// draw a row of tiles
