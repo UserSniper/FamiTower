@@ -88,7 +88,16 @@ void main(void) {
         }
         detect_animation();
         draw_sprites();
-
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
+        waste_time_lol();
         gray_line();
     }
 }
@@ -96,6 +105,27 @@ void main(void) {
 
 
 
+
+
+
+
+
+
+
+
+void waste_time_lol() {
+    i = 0;
+    j = 0;
+    k = 0;
+    for(i = 255; i != 0; i++) {
+        for(j = 255; j != 0; j++) {
+            for(k = 255; k != 0; k++) {
+                l = l+0x7D;
+                l = l/3;
+            };
+        };
+    };
+}
 
 
 

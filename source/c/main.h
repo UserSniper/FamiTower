@@ -42,6 +42,9 @@ unsigned char which_bg;
 unsigned char peppino_anim;
 unsigned char peppino_taunt_timer;
 unsigned char peppino_previous_taunt_anim;
+unsigned char j;
+unsigned char k;
+unsigned char l;
 struct BoxGuy {
 	unsigned char x;
 	unsigned char y;
@@ -87,3 +90,4 @@ void bg_collision(void);
 void check_start(void);
 unsigned char check_collision(void * object1, void * object2);
 void detect_animation(void);
+void waste_time_lol(void);
