@@ -1,0 +1,82 @@
+2BG reg:
+eaaallmm
+
+e - 1 if enabled
+aaa - attribute table size (16x16, 8x16, 8x8, 8x4, 8x2, 8x1 (only available if 16 or 32KB allocated to 2BG CHR))
+ll - layout (images shown for mm = 11):
+00: (Y.8; X.8)
+
+0 | 1
+--+--
+2 | 3
+
+01: (X.8, Y.8)
+
+0 | 2
+--+--
+1 | 3
+
+10: (X.9; X.8)
+
+0 | 1 | 2 | 3
+
+11: (Y.9; Y.8)
+
+0
+--
+1
+--
+2
+--
+3
+
+mm - memory allocation & AND mask on the 2 controlling bits (00 - 16KB; 01, 10 - 32KB; 11 - 64KB)
+
+funny notes about AND mask:
+00 - ll doesn't matter at all
+0 | 0
+--+--
+0 | 0
+
+01 - upper bit of l doesn't matter
+x0:
+0 | 1 | 0
+--+---+--
+0 | 1 | 0
+
+x1:
+0 | 0
+--+--
+1 | 1
+--+--
+0 | 0
+
+10 - bits are swapped after the AND mask
+00:
+0 | 0 
+--+--
+1 | 1
+--+--
+0 | 0
+
+01:
+0 | 1 | 0
+--+---+--
+0 | 1 | 0
+
+10:
+0 | 0 | 1 | 1 | 0
+--+---+---+---+--
+0 | 0 | 1 | 1 | 0
+
+11:
+0 | 0
+--+--
+0 | 0
+--+--
+1 | 1
+--+--
+1 | 1
+--+--
+0 | 0
+
