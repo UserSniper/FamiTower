@@ -8,7 +8,8 @@ song_the_death_that_i_deservioli_1 = 6
 song_oregano_mirage_1 = 7
 song_a_grain_of_bread_in_a_grain_of_sand_1 = 8
 song_bye_bye_there_1 = 9
-song_max = 10
+song_dpcm_force_include = 10
+song_max = 11
 
 .if SONG_STRINGS
 song_strings:
@@ -22,4 +23,5 @@ song_strings:
 .asciiz "Oregano Mirage 1"
 .asciiz "A Grain of Bread in a Grain of Sand 1"
 .asciiz "bye bye there! 1"
+.asciiz "DPCM force include"
 .endif
