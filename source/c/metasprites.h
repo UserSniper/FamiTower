@@ -85,6 +85,25 @@ const unsigned char Peppino_taunt06[]={
 	0x80
 };
 
+const unsigned char Peppino_taunt07[]={
+
+	-11,-17,0x71,0,
+	- 3,-17,0x73,0,
+	  5,-17,0x75,0,
+	 13,-17,0x77,0,
+
+	- 8,- 1,0x79,0,
+	  0,- 1,0x7b,0,
+	  8,- 1,0x7d,0,
+	- 8, 15,0x7f,0,
+
+	  0, 15,0x81,0,
+	  8, 15,0x83,0,
+	- 7,- 3,0x85,1,
+	  5, 11,0x1d,1,
+	0x80
+};
+
 const unsigned char Peppino_taunt12[]={
 
 	- 8,- 7,0x61,0,
