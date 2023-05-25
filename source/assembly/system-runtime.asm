@@ -26,7 +26,7 @@
     MAPPER = 4 ; 4 = MMC3
     SUBMAPPER = 0 ; Standard
     MIRRORING = 8 ; 0 = horizontal mirroring, 1 = vertical mirroring, 8 = hardwired 4-screen 
-    PRG_BANK_COUNT = 4 ; 16k PRG chunk count
+    PRG_BANK_COUNT = 8 ; 16k PRG chunk count
     CHR_BANK_COUNT = 0 ; 8k CHR chunk count
     SRAM   = 1 ; 1 = battery backed SRAM at $6000-7FFF
     TRAINER = 0 ; unneeded

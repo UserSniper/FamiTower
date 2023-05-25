@@ -34,12 +34,10 @@ _disable_grayscale:
     rts
 
 famistudio_dpcm_bank_callback:
-    TAY
-    LDA @lookup_table, y
+    CLC
+    ADC #$0C
     LDX #MMC3_REG_SEL_PRG_BANK_0
     JMP mmc3_internal_set_bank
-@lookup_table:
-    .byte $04, $05
 
 ;unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x,unsigned char y,unsigned char sprid,const unsigned char *data);
 
