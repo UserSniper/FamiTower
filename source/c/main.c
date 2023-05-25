@@ -21,6 +21,10 @@ void main(void) {
     mmc3_set_1kb_chr_bank_1(5);
     mmc3_set_1kb_chr_bank_2(6);
     mmc3_set_1kb_chr_bank_3(7);
+    mmc3_set_prg_bank_1(2);
+    vram_adr(0x1000);
+    unpack_tiles((unsigned char *)compressed_test);
+
     mmc3_set_prg_bank_1(1);
     vram_adr(0x0000);
     vram_write((unsigned char *)background_graphics, 0x2000);

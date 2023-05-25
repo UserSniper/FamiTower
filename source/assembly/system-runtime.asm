@@ -114,12 +114,12 @@
 ;
 ; BSS variables
 ; 
-; This is the "rest" of the memory for your game. There are about 1500 bytes available in total. 
+; This is the "rest" of the memory for your game. There are 1536 bytes available in total. 
 ; This is where variables you add in C are put by default.
 ;
 
 .segment "BSS"
-; yourvariable: .res 8
+    decomp_buffer: .res 16
 
 
 ; 

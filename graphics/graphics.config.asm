@@ -12,7 +12,10 @@
     .incbin "./background.chr"
     _sprite_graphics:
     .incbin "./sprite.chr"
+.segment "ROM_BANK_02"
+    _compressed_test:
+    .include "./spritegfxcompressed.asm"
 
 ; Other chr banks need some data in them - repeated chr data can be replaced.
 
-.export _background_graphics, _sprite_graphics
+.export _background_graphics, _sprite_graphics, _compressed_test

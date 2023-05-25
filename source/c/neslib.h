@@ -239,7 +239,9 @@ void __fastcall__ toggle_grayscale(void);
 
 void __fastcall__ disable_grayscale(void);
 
-unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x,unsigned char y,unsigned char sprid,const unsigned char *data);
+unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x, unsigned char y, unsigned char sprid, const unsigned char *data);
+
+void __fastcall__ unpack_tiles(const unsigned char* data);
 
 #define PAD_A           0x01
 #define PAD_B           0x02
