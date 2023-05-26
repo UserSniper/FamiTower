@@ -12,3 +12,5 @@ graphics/*.rle.bin
 graphics/*.rle.chr
 # The output
 rom
+# the c
+bruh.wav
