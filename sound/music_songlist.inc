@@ -7,9 +7,10 @@ song_its_pizza_time_1 = 5
 song_the_death_that_i_deservioli_1 = 6
 song_oregano_mirage_1 = 7
 song_a_grain_of_bread_in_a_grain_of_sand_1 = 8
-song_bye_bye_there_1 = 9
-song_dpcm_force_include = 10
-song_max = 11
+song_unexpectancy_3_1 = 9
+song_bye_bye_there_1 = 10
+song_hip_to_be_italian_1 = 11
+song_max = 12
 
 .if SONG_STRINGS
 song_strings:
@@ -22,6 +23,7 @@ song_strings:
 .asciiz "The Death That I Deservioli 1"
 .asciiz "Oregano Mirage 1"
 .asciiz "A Grain of Bread in a Grain of Sand 1"
+.asciiz "Unexpectancy (3) 1"
 .asciiz "bye bye there! 1"
-.asciiz "DPCM force include"
+.asciiz "Hip to be Italian 1"
 .endif

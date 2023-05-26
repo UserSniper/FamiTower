@@ -122,7 +122,17 @@ neslib_nmi:
 
 @skipNtsc:
 
-    jsr famistudio_update
+    LDA current_song_bank
+    CLC
+    ADC #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+
+    JSR famistudio_update
+
+    LDA mmc3PRG1Bank
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JMP mmc3_internal_set_bank
 
     ;pla
     ;tay
@@ -131,7 +141,7 @@ neslib_nmi:
     ;pla
 
     ; rti
-    rts
+    ;rts
     
 ;void __fastcall__ pal_all(const char *data);
 

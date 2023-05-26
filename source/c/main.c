@@ -21,6 +21,10 @@ void main(void) {
     mmc3_set_1kb_chr_bank_1(5);
     mmc3_set_1kb_chr_bank_2(6);
     mmc3_set_1kb_chr_bank_3(7);
+    mmc3_set_prg_bank_1(2);
+    vram_adr(0x1000);
+    unpack_tiles((unsigned char *)compressed_test);
+
     mmc3_set_prg_bank_1(1);
     vram_adr(0x0000);
     vram_write((unsigned char *)background_graphics, 0x2000);
@@ -45,7 +49,7 @@ void main(void) {
 
     songid = 0;
     // Play the first song built into the rom.
-    famistudio_music_play(0);
+    music_play(0);
     // Infinite loop to end things
     while (1) {
         if (peppino_taunt_timer > 0) --peppino_taunt_timer;
@@ -58,11 +62,11 @@ void main(void) {
         if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
             ++songid;
-            if (songid > 0x0A) {
+            if (songid > 0x0B) {
                 songid = 0x00;
             }
             famistudio_music_stop();
-            famistudio_music_play(songid);
+            music_play(songid);
         }
 
 
@@ -70,7 +74,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 rand = rand8();
-                famistudio_sfx_sample_play(0x2a);
+                sfx_sample_play(0x3A);
                 peppino_taunt_timer = 15;
             }
         }
@@ -142,6 +146,7 @@ void waste_time_lol() {
 
 
 void draw_sprites(void){
+    mmc3_set_prg_bank_1(0);
     //Draw Peppino
     oam_clear();
     oam_size(1);

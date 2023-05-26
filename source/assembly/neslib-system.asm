@@ -66,10 +66,17 @@ SCRY        =TEMP+6
 SRC         =TEMP+7 ;word
 DST         =TEMP+9 ;word
 
+TILE_CNT    =TEMP+2
+FLAG_CNT    =TEMP+3
+BIT_CNT     =TEMP+4
+RLE_FLAGS   =TEMP+5
+RLE_BYTE    =TEMP+6
+RLE_DELTA   =TEMP+7
+
 RLE_LOW     =TEMP
 RLE_HIGH    =TEMP+1
 RLE_TAG     =TEMP+2
-RLE_BYTE    =TEMP+3
+;RLE_BYTE    =TEMP+3
 
 ;nesdoug code requires
 VRAM_INDEX:			.res 1
@@ -118,9 +125,13 @@ detectNTSC:
 
     jsr _ppu_off
 
+    LDA #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+
     lda #$01                ;NTSC
-    ldx #<music_data_
-    ldy #>music_data_
+    ldx #<music_data_1_
+    ldy #>music_data_1_
     jsr famistudio_init
 
     ldx #<sounds

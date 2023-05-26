@@ -1,6 +1,7 @@
     .export _enable_grayscale, _toggle_grayscale, _disable_grayscale
-    .export famistudio_dpcm_bank_callback
+    .export famistudio_dpcm_bank_callback, _music_play, _sfx_sample_play
     .export _oam_meta_spr_hflipped
+    .export _unpack_tiles
 
 .SEGMENT "CODE"
 
@@ -34,12 +35,61 @@ _disable_grayscale:
     rts
 
 famistudio_dpcm_bank_callback:
-    TAY
-    LDA @lookup_table, y
+    CLC
+    ADC #$0C
     LDX #MMC3_REG_SEL_PRG_BANK_0
     JMP mmc3_internal_set_bank
-@lookup_table:
-    .byte $04, $05
+
+;void __fastcall__ music_play(unsigned char song);
+_music_play:
+    PHA
+    LSR
+    LSR
+    LSR
+    PHA
+    CLC
+    ADC #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+    PLA
+    CMP current_song_bank
+    BEQ :+
+    ;If different bank than before reinitalize FS
+        STA current_song_bank
+        TAY
+        LDX @music_data_locations_lo, Y
+        LDA @music_data_locations_hi, Y
+        TAY
+        LDA #$01
+        JSR famistudio_init
+    :
+    PLA
+    AND #$07
+    JSR famistudio_music_play
+    
+    LDA mmc3PRG1Bank
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JMP mmc3_internal_set_bank
+
+
+@music_data_locations_lo:
+.byte <music_data_1_, <music_data_2_
+@music_data_locations_hi:
+.byte >music_data_1_, >music_data_2_
+
+;void __fastcall__ sfx_sample_play(unsigned char index);
+_sfx_sample_play:
+    PHA
+    LDA current_song_bank
+    CLC
+    ADC #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+    PLA
+    JSR famistudio_sfx_sample_play
+    LDA mmc3PRG1Bank
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JMP mmc3_internal_set_bank
 
 ;unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x,unsigned char y,unsigned char sprid,const unsigned char *data);
 
@@ -100,3 +150,85 @@ _oam_meta_spr_hflipped:
 
     txa
     rts
+
+;Format:
+;1 byte - amount of 8x8 tiles
+;   Repeat amount of tiles / 8 times:
+;1 byte - flags whether the tile is stored as raw data or RLE encoded
+;X bytes - actual data
+
+;void __fastcall__ unpack_tiles(const unsigned char* data);
+_unpack_tiles:
+    TAY
+    LDA #$00
+    STA <PTR
+    STX <PTR+1
+    ; Get total tile count
+    LDA (PTR), Y
+    STA <TILE_CNT
+    INY
+    BNE @GetRLEFlags
+    INC <PTR+1
+
+@GetRLEFlags:
+    LDA #$08
+    STA <FLAG_CNT
+    LDA (PTR), Y
+    STA <RLE_FLAGS
+    INY
+    BNE @NewTile
+    INC <PTR+1
+
+@NewTile:
+    ASL <RLE_FLAGS
+    BCS @RLEDecompress
+    LDX #$10
+    
+@NotCompressedLoop1:
+    LDA (PTR), Y
+    STA PPU_DATA
+    INY
+    BNE @NotCompressedLoop2
+    INC <PTR+1
+@NotCompressedLoop2:
+    DEX
+    BNE @NotCompressedLoop1
+    DEC <TILE_CNT
+    BEQ @End
+    DEC <FLAG_CNT
+    BNE @NewTile
+    BEQ @GetRLEFlags
+
+@End:
+    RTS
+
+;RLE Format (based on 1st Gen Pokemon):
+;1 bit - whether the data is delta-encoded
+;1 bit - starting packet type (0 if zero, 1 if data)
+;variable - actual data:
+;   Zero packet:
+;   x bits - 1s ending with a 0, specifies the length of the following number
+;   x bits - amount of 00 pairs + 1 with the leading bit stripped
+;   Data packet:
+;   2x bits - data in bit pairs
+;   2 bits - terminating 00 pair
+@RLEDecompress:
+    RTS
+;     LDX #$06
+;     STX <BIT_CNT
+;     LDX #$00
+;     STX <RLE_DELTA
+;     STX <RLE_PTYPE
+;     LDA (PTR), Y
+;     INY
+;     BNE @RLEParseHeader
+;     INC <PTR+1
+
+; @RLEParseHeader:
+;     ASL             ;Get delta encoding bit
+;     ROL <RLE_DELTA
+;     ASL             ;Get initial packet type
+;     BCC @RLEZeroPacket
+
+; @RLEDataPacket:
+    
