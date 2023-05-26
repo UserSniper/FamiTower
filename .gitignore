@@ -14,3 +14,4 @@ graphics/*.rle.chr
 rom
 # the c
 bruh.wav
+CSV2C.py
