@@ -33,6 +33,8 @@
 .segment "ZEROPAGE"
     ; Used to track whether a register write was interrupted, so we can try again if needed.
     mmc3ChrInversionSetting: .res 1
+.segment "BSS"
+    mmc3PRG1Bank: .res 1    ;because famistudio updates
 
 .segment "CODE_2"
     mmc3_internal_set_bank:
@@ -53,6 +55,7 @@
 
     mmc3_set_prg_bank_1:
     _mmc3_set_prg_bank_1:
+        STA mmc3PRG1Bank
         ldx #MMC3_REG_SEL_PRG_BANK_1
         jmp mmc3_internal_set_bank
     .export _mmc3_set_prg_bank_1
@@ -111,16 +114,7 @@
         lda #1
         jmp mmc3_set_prg_bank_1
 
-.segment "RODATA_2"
-    ; This section isn't defined in all roms, so put something there to quiet a warning
-    ; You can safely delete this if you're using RODATA_2 (or delete it)
-    .byte 00
-
 ; Every bank needs a reset method at the start to get the mapper to start in the right state. So, do that.
-.segment "ROM_BANK_02" 
-    jmp reset
-.segment "ROM_BANK_03" 
-    jmp reset
 .segment "DMC_BANK_00" 
     FAMISTUDIO_DPCM_OFF:
     .incbin "../../sound/music_bank0.dmc"

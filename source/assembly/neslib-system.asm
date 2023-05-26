@@ -125,9 +125,13 @@ detectNTSC:
 
     jsr _ppu_off
 
+    LDA #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+
     lda #$01                ;NTSC
-    ldx #<music_data_
-    ldy #>music_data_
+    ldx #<music_data_1_
+    ldy #>music_data_1_
     jsr famistudio_init
 
     ldx #<sounds

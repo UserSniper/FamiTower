@@ -243,6 +243,10 @@ unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x, unsigned char 
 
 void __fastcall__ unpack_tiles(const unsigned char* data);
 
+void __fastcall__ music_play(unsigned char song);
+
+void __fastcall__ sfx_sample_play(unsigned char index);
+
 #define PAD_A           0x01
 #define PAD_B           0x02
 #define PAD_SELECT      0x04

@@ -1,5 +1,5 @@
     .export _enable_grayscale, _toggle_grayscale, _disable_grayscale
-    .export famistudio_dpcm_bank_callback
+    .export famistudio_dpcm_bank_callback, _music_play, _sfx_sample_play
     .export _oam_meta_spr_hflipped
     .export _unpack_tiles
 
@@ -38,6 +38,57 @@ famistudio_dpcm_bank_callback:
     CLC
     ADC #$0C
     LDX #MMC3_REG_SEL_PRG_BANK_0
+    JMP mmc3_internal_set_bank
+
+;void __fastcall__ music_play(unsigned char song);
+_music_play:
+    PHA
+    LSR
+    LSR
+    LSR
+    PHA
+    CLC
+    ADC #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+    PLA
+    CMP current_song_bank
+    BEQ :+
+    ;If different bank than before reinitalize FS
+        STA current_song_bank
+        TAY
+        LDX @music_data_locations_lo, Y
+        LDA @music_data_locations_hi, Y
+        TAY
+        LDA #$01
+        JSR famistudio_init
+    :
+    PLA
+    AND #$07
+    JSR famistudio_music_play
+    
+    LDA mmc3PRG1Bank
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JMP mmc3_internal_set_bank
+
+
+@music_data_locations_lo:
+.byte <music_data_1_, <music_data_2_
+@music_data_locations_hi:
+.byte >music_data_1_, >music_data_2_
+
+;void __fastcall__ sfx_sample_play(unsigned char index);
+_sfx_sample_play:
+    PHA
+    LDA current_song_bank
+    CLC
+    ADC #$0A
+    LDX #MMC3_REG_SEL_PRG_BANK_1
+    JSR mmc3_internal_set_bank
+    PLA
+    JSR famistudio_sfx_sample_play
+    LDA mmc3PRG1Bank
+    LDX #MMC3_REG_SEL_PRG_BANK_1
     JMP mmc3_internal_set_bank
 
 ;unsigned char __fastcall__ oam_meta_spr_hflipped(unsigned char x,unsigned char y,unsigned char sprid,const unsigned char *data);

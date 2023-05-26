@@ -909,12 +909,12 @@ famistudio_sfx_buffer = famistudio_sfx_base_addr + 4
 
 .segment .string(FAMISTUDIO_CA65_ZP_SEGMENT) : zeropage
 
-famistudio_r0:   .res 1
-famistudio_r1:   .res 1
-famistudio_r2:   .res 1
+famistudio_r0      = TEMP
+famistudio_r1      = TEMP+1
+famistudio_r2      = TEMP+2
 
-famistudio_ptr0: .res 2
-famistudio_ptr1: .res 2
+famistudio_ptr0    = TEMP+3
+famistudio_ptr1    = TEMP+5
 
 famistudio_ptr0_lo = famistudio_ptr0+0
 famistudio_ptr0_hi = famistudio_ptr0+1
