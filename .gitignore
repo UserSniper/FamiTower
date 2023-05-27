@@ -1,11 +1,6 @@
-# Tools are installed by the download-dependencies sub-command
-tools
+# Tools are installed by the get_dependencies sub-command
+tools/cc65
 temp
-# If you have this tool in the folder, don't commit it!
-./create-nes-game.exe
-./create-nes-game-win.exe
-./create-nes-game
-./create-nes-game-*
 # Run-length encoded files
 graphics/*.rle.nam
 graphics/*.rle.bin

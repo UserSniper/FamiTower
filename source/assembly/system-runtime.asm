@@ -119,7 +119,6 @@
 ;
 
 .segment "BSS"
-    decomp_buffer: .res 16  ;For tile RLE
     current_song_bank: .res 1 
 
 

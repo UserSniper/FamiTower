@@ -3,6 +3,21 @@
     .export _oam_meta_spr_hflipped
     .export _unpack_tiles
 
+.SEGMENT "ZEROPAGE"
+
+TILE_CNT    =TEMP+2
+;RLE_BYTE    =TEMP+3
+FLAG_CNT    =TEMP+4
+BIT_IN_CNT  =TEMP+5
+BIT_OUT_CNT =TEMP+6
+RLE_FLAGS   =TEMP+7
+RLE_DELTA   =TEMP+8
+RLE_TEMPA   =TEMP+9
+RLE_TEMPB   =TEMP+10
+
+.segment "BSS"
+    decomp_buffer: .res 16  ;For GFX RLE
+
 .SEGMENT "CODE"
 
 ;alexmush's debug additions
@@ -213,22 +228,168 @@ _unpack_tiles:
 ;   2x bits - data in bit pairs
 ;   2 bits - terminating 00 pair
 @RLEDecompress:
-    RTS
-;     LDX #$06
-;     STX <BIT_CNT
-;     LDX #$00
-;     STX <RLE_DELTA
-;     STX <RLE_PTYPE
-;     LDA (PTR), Y
-;     INY
-;     BNE @RLEParseHeader
-;     INC <PTR+1
+    LDX #$03
+    STX BIT_IN_CNT
+    LDX #$04
+    STX BIT_OUT_CNT
+    LDX #$00
+    STX <RLE_DELTA
+    LDA (PTR), Y
+    INY
+    BNE @RLEParseHeader
+    INC PTR+1
 
-; @RLEParseHeader:
-;     ASL             ;Get delta encoding bit
-;     ROL <RLE_DELTA
-;     ASL             ;Get initial packet type
-;     BCC @RLEZeroPacket
+@RLEParseHeader:
+    ASL             ;Get delta encoding bit
+    ROL <RLE_DELTA
+    ASL             ;Get initial packet type
+    BCC @RLEZeroPacket
 
-; @RLEDataPacket:
+@RLEDataPacketLoop:
+    PHA
+    AND #$C0
+    BEQ @RLEZeroPacketFromData
+    PLA
+    ASL             ;
+    ROL <RLE_BYTE   ;   Get the bit pair
+    ASL             ;
+    ROL <RLE_BYTE   ;
     
+    DEC BIT_IN_CNT
+    BNE :+
+    ;Update counter
+    LDA #$04
+    STA BIT_IN_CNT
+    ;Get new byte
+    LDA (PTR), Y
+    INY
+    BNE :+
+    INC PTR+1
+    :
+
+    DEC BIT_OUT_CNT
+    BNE @RLEDataPacketLoop
+    ;Write the byte to the buffer
+    STA <RLE_TEMPA   ;Same as PHA
+    LDA <RLE_BYTE
+    STA decomp_buffer, X
+    ;Update counter
+    LDA #$04
+    STA BIT_OUT_CNT
+    LDA <RLE_TEMPA   ;Cheaper than PLA
+    INX
+    CPX #$10
+    BNE @RLEDataPacketLoop
+    RTS
+
+@RLEZeroPacketFromData:
+    PLA
+    ;Coming from data packet, remove the terminating 00 pair
+    ASL
+    ASL
+@RLEZeroPacket:
+    ;The IN counter used to count *pairs* of bits
+    ;That's why this adjustment exists
+    ASL BIT_IN_CNT
+    INC BIT_IN_CNT
+    STX <RLE_TEMPA   ;X is used for other purposes here
+    LDX #$00
+@RLEZeroPacketLengthLoop:
+    DEC BIT_IN_CNT
+    BNE :+
+    ;
+    ;Update counter
+    LDA #$09
+    STA BIT_IN_CNT
+    ;Get new byte
+    LDA (PTR), Y
+    INY
+    BNE :+
+    INC PTR+1
+    
+    :
+    ASL
+    INX
+    BCS @RLEZeroPacketLengthLoop
+
+@RLEZeroPacketAddition:
+    STY PTR
+    LDY #$01
+    STY <RLE_TEMPB
+    LDY PTR
+    PHA
+    LDA #$00
+    STA PTR
+    PLA
+
+@RLEZeroPacketAdditionLoop:
+    DEC BIT_IN_CNT
+    BNE :+
+    ;
+    ;Update counter
+    LDA #$09
+    STA BIT_IN_CNT
+    ;Get new byte
+    LDA (PTR), Y
+    INY
+    BNE :+
+    INC PTR+1
+    
+    :
+    ASL
+    ROL <RLE_TEMPB
+    DEX
+    BNE @RLEZeroPacketAdditionLoop
+@RLEZeroPacketZeroInsertion:
+    DEC BIT_IN_CNT
+    LSR BIT_IN_CNT
+    DEC <RLE_TEMPB ;Decrement amount of bit pairs 
+    LDX <RLE_TEMPA ;Recover X
+    PHA
+;Loop 1, possibly containing old data
+@RLEZeroPacketLoop1:
+    ASL <RLE_BYTE
+    ASL <RLE_BYTE
+    DEC <RLE_TEMPB
+    BEQ @RLEZeroPacketToData
+    DEC BIT_OUT_CNT
+    BNE @RLEZeroPacketLoop1
+;Before Loop 2
+    ;Write the byte to the buffer
+    LDA <RLE_BYTE
+    STA decomp_buffer, X
+    ;Update counter
+    LDA #$04
+    STA BIT_OUT_CNT
+    INX
+    CPX #$10
+    BEQ @EndPLA
+;Loop 2, just writing zeros:
+@RLEZeroPacketLoop2:
+    LDA <RLE_TEMPB
+    CMP #$04
+    BMI @RLEZeroPacketLoop3
+    SEC
+    SBC #$04
+    STA <RLE_TEMPB
+    LDA #$00
+    STA decomp_buffer, X
+    INX
+    CPX #$10
+    BNE @RLEZeroPacketLoop2
+
+@EndPLA:
+    PLA
+    RTS
+;Loop 3, the remaining bits
+@RLEZeroPacketLoop3:
+    LDA #$00
+    STA <RLE_BYTE
+    LDA <RLE_TEMPB
+    STA BIT_OUT_CNT
+@RLEZeroPacketToData:
+    PLA
+    JMP @RLEDataPacketLoop
+        
+
+
