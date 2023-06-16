@@ -2,13 +2,16 @@ CC65_URL = https://github.com/cc65/cc65/archive/refs/tags/V2.19.tar.gz
 CC65_DIR = tools/cc65
 current_dir = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-debug: compile assemble link
-build: compile assemble link clean
+debug: sprite.rle compile assemble link
+build: sprite.rle compile assemble link clean
 get_dependencies:
 	$(info Installing cc65...)
 	mkdir -p "${CC65_DIR}"
 	curl -L "${CC65_URL}" | tar -xz --strip-components=1 -C "${CC65_DIR}"
 	cd "${CC65_DIR}" && $(MAKE)
+
+sprite.rle:
+	/bin/python tools/utils/RLE.py -i sprite.chr -v -no-delta -o temp/sprite.rle
 
 compile:
 	$(info Compling...)

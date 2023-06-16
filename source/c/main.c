@@ -1,9 +1,7 @@
 // Include defines for various pieces of the NES hardware
 #include "main.h"
 
-//
-// The fucking nametable
-// screw you, ld65. here's the nametable.
+
 
 //
 // Main entrypoint
@@ -23,11 +21,11 @@ void main(void) {
     mmc3_set_1kb_chr_bank_3(7);
     mmc3_set_prg_bank_1(2);
     vram_adr(0x1000);
-    unpack_tiles((unsigned char *)compressed_test);
+    unpack_tiles ((unsigned char *) compressed_test);
 
     mmc3_set_prg_bank_1(1);
     vram_adr(0x0000);
-    vram_write((unsigned char *)background_graphics, 0x2000);
+    vram_write((unsigned char *)background_graphics, 0x1000);
 
     mmc3_set_prg_bank_1(0);
     which_bg = 0;
@@ -74,7 +72,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 rand = rand8();
-                sfx_sample_play(0x3A);
+                sfx_sample_play(0x2F);
                 peppino_taunt_timer = 15;
             }
         }

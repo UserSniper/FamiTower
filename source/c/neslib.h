@@ -247,6 +247,8 @@ void __fastcall__ music_play(unsigned char song);
 
 void __fastcall__ sfx_sample_play(unsigned char index);
 
+void __fastcall__ decompressTokumaru(const unsigned char *data);
+
 #define PAD_A           0x01
 #define PAD_B           0x02
 #define PAD_SELECT      0x04

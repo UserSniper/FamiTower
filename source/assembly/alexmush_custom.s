@@ -57,10 +57,19 @@ famistudio_dpcm_bank_callback:
 
 ;void __fastcall__ music_play(unsigned char song);
 _music_play:
+    LDY #$00
+    TSX
+@bank_loop:
     PHA
-    LSR
-    LSR
-    LSR
+    SEC
+    SBC @music_counts, Y
+    BCC @found_bank
+    INY
+    TXS ;Act as if no PHA happened
+    JMP @bank_loop
+    
+@found_bank:
+    TYA
     PHA
     CLC
     ADC #$0A
@@ -79,7 +88,8 @@ _music_play:
         JSR famistudio_init
     :
     PLA
-    AND #$07
+    CLC
+    ADC #$01 ;DPCM aligner
     JSR famistudio_music_play
     
     LDA mmc3PRG1Bank
@@ -91,6 +101,8 @@ _music_play:
 .byte <music_data_1_, <music_data_2_
 @music_data_locations_hi:
 .byte >music_data_1_, >music_data_2_
+@music_counts:
+.byte $07, $FF  ;last bank is marked with an FF to always stop bank picking
 
 ;void __fastcall__ sfx_sample_play(unsigned char index);
 _sfx_sample_play:
@@ -199,20 +211,20 @@ _unpack_tiles:
     BCS @RLEDecompress
     LDX #$10
     
-@NotCompressedLoop1:
+@NotCompressedLoop:
     LDA (PTR), Y
     STA PPU_DATA
     INY
-    BNE @NotCompressedLoop2
+    BNE :+
     INC <PTR+1
-@NotCompressedLoop2:
+    :
     DEX
-    BNE @NotCompressedLoop1
+    BNE @NotCompressedLoop
     DEC <TILE_CNT
     BEQ @End
     DEC <FLAG_CNT
     BNE @NewTile
-    BEQ @GetRLEFlags
+    JMP @GetRLEFlags
 
 @End:
     RTS
@@ -230,14 +242,16 @@ _unpack_tiles:
 @RLEDecompress:
     LDX #$03
     STX BIT_IN_CNT
-    LDX #$04
+    INX
     STX BIT_OUT_CNT
     LDX #$00
     STX <RLE_DELTA
+    STX <RLE_BYTE
+    LDX #$0F
     LDA (PTR), Y
     INY
     BNE @RLEParseHeader
-    INC PTR+1
+    INC <PTR+1
 
 @RLEParseHeader:
     ASL             ;Get delta encoding bit
@@ -264,7 +278,7 @@ _unpack_tiles:
     LDA (PTR), Y
     INY
     BNE :+
-    INC PTR+1
+    INC <PTR+1
     :
 
     DEC BIT_OUT_CNT
@@ -277,35 +291,43 @@ _unpack_tiles:
     LDA #$04
     STA BIT_OUT_CNT
     LDA <RLE_TEMPA   ;Cheaper than PLA
-    INX
-    CPX #$10
-    BNE @RLEDataPacketLoop
-    RTS
+    DEX
+    BPL @RLEDataPacketLoop
+    JMP @RLEnd
 
 @RLEZeroPacketFromData:
     PLA
     ;Coming from data packet, remove the terminating 00 pair
     ASL
     ASL
+    DEC BIT_IN_CNT
+    BNE @RLEZeroPacket
+    ;Update counter
+    LDA #$04
+    STA BIT_IN_CNT
+    ;Get new byte
+    LDA (PTR), Y
+    INY
+    BNE @RLEZeroPacket
+    INC <PTR+1
 @RLEZeroPacket:
     ;The IN counter used to count *pairs* of bits
     ;That's why this adjustment exists
     ASL BIT_IN_CNT
-    INC BIT_IN_CNT
     STX <RLE_TEMPA   ;X is used for other purposes here
     LDX #$00
 @RLEZeroPacketLengthLoop:
     DEC BIT_IN_CNT
-    BNE :+
+    BPL :+
     ;
     ;Update counter
-    LDA #$09
+    LDA #$08
     STA BIT_IN_CNT
     ;Get new byte
     LDA (PTR), Y
     INY
     BNE :+
-    INC PTR+1
+    INC <PTR+1
     
     :
     ASL
@@ -313,57 +335,67 @@ _unpack_tiles:
     BCS @RLEZeroPacketLengthLoop
 
 @RLEZeroPacketAddition:
-    STY PTR
-    LDY #$01
-    STY <RLE_TEMPB
-    LDY PTR
     PHA
-    LDA #$00
-    STA PTR
+    LDA #$01
+    STA <RLE_TEMPB
     PLA
 
 @RLEZeroPacketAdditionLoop:
     DEC BIT_IN_CNT
-    BNE :+
+    BPL :+
     ;
     ;Update counter
-    LDA #$09
+    LDA #$08
     STA BIT_IN_CNT
     ;Get new byte
     LDA (PTR), Y
     INY
     BNE :+
-    INC PTR+1
+    INC <PTR+1
     
     :
     ASL
     ROL <RLE_TEMPB
     DEX
     BNE @RLEZeroPacketAdditionLoop
-@RLEZeroPacketZeroInsertion:
+;
+;gotta do it again
     DEC BIT_IN_CNT
-    LSR BIT_IN_CNT
-    DEC <RLE_TEMPB ;Decrement amount of bit pairs 
+    BPL @RLEZeroPacketZeroInsertion
+    ;
+    ;Update counter
+    LDA #$08
+    STA BIT_IN_CNT
+    ;Get new byte
+    LDA (PTR), Y
+    INY
+    BNE @RLEZeroPacketZeroInsertion
+    INC <PTR+1
+    
+@RLEZeroPacketZeroInsertion:
+    INC <BIT_IN_CNT
+    LSR <BIT_IN_CNT
     LDX <RLE_TEMPA ;Recover X
     PHA
+    DEC <RLE_TEMPB ;Decrement amount of bit pairs 
+    BEQ @RLEZeroPacketToData
+    LDA <RLE_BYTE
 ;Loop 1, possibly containing old data
 @RLEZeroPacketLoop1:
-    ASL <RLE_BYTE
-    ASL <RLE_BYTE
+    ASL
+    ASL
     DEC <RLE_TEMPB
-    BEQ @RLEZeroPacketToData
+    BEQ @RLEZeroPacketToDataFromLoop1
     DEC BIT_OUT_CNT
     BNE @RLEZeroPacketLoop1
 ;Before Loop 2
     ;Write the byte to the buffer
-    LDA <RLE_BYTE
     STA decomp_buffer, X
     ;Update counter
     LDA #$04
     STA BIT_OUT_CNT
-    INX
-    CPX #$10
-    BEQ @EndPLA
+    DEX
+    BMI @EndPLA
 ;Loop 2, just writing zeros:
 @RLEZeroPacketLoop2:
     LDA <RLE_TEMPB
@@ -374,22 +406,59 @@ _unpack_tiles:
     STA <RLE_TEMPB
     LDA #$00
     STA decomp_buffer, X
-    INX
-    CPX #$10
-    BNE @RLEZeroPacketLoop2
+    DEX
+    BPL @RLEZeroPacketLoop2
 
 @EndPLA:
     PLA
+@RLEnd:
+    LDA <BIT_IN_CNT
+    CMP #$04
+    BNE :+
+    DEY
+    CPY #$FF
+    BNE :+
+    DEC <PTR+1
+    :
+    ;Put da data into VRAM
+    LDX #$0F
+    :
+    LDA decomp_buffer, X
+    STA PPU_DATA
+    DEX
+    BPL :-
+    DEC <TILE_CNT
+    BEQ @End2
+    DEC <FLAG_CNT
+    BNE @NewTileJMP
+    JMP @GetRLEFlags
+@End2:
     RTS
+@NewTileJMP:
+    JMP @NewTile
+
+
 ;Loop 3, the remaining bits
 @RLEZeroPacketLoop3:
     LDA #$00
     STA <RLE_BYTE
-    LDA <RLE_TEMPB
+    LDA #$04
+    SEC
+    SBC <RLE_TEMPB
     STA BIT_OUT_CNT
 @RLEZeroPacketToData:
     PLA
     JMP @RLEDataPacketLoop
-        
-
+@RLEZeroPacketToDataFromLoop1:
+    STA <RLE_BYTE
+    DEC BIT_OUT_CNT
+    BNE @RLEZeroPacketToData
+    ;Write the byte to the buffer
+    STA decomp_buffer, X
+    ;Update counter
+    LDA #$04
+    STA BIT_OUT_CNT
+    DEX
+    BMI @EndPLA
+    JMP @RLEZeroPacketToData
 

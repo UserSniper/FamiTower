@@ -117,7 +117,7 @@
 ; Every bank needs a reset method at the start to get the mapper to start in the right state. So, do that.
 .segment "DMC_BANK_00" 
     FAMISTUDIO_DPCM_OFF:
-    .incbin "../../sound/music_bank0.dmc"
+    .incbin "../../sound/bank0.dmc"
 .segment "DMC_BANK_01"
-    .incbin "../../sound/music_bank1.dmc"
+    .incbin "../../sound/bank1.dmc"
 

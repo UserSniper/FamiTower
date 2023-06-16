@@ -14,7 +14,7 @@
     .incbin "./sprite.chr"
 .segment "ROM_BANK_02"
     _compressed_test:
-    .include "./spritegfxcompressed.asm"
+    .incbin "temp/sprite.rle"
 
 ; Other chr banks need some data in them - repeated chr data can be replaced.
 

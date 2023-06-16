@@ -2,9 +2,7 @@
 tools/cc65
 temp
 # Run-length encoded files
-graphics/*.rle.nam
-graphics/*.rle.bin
-graphics/*.rle.chr
+*.rle
 # The output
 rom
 # the c
