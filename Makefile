@@ -11,7 +11,7 @@ get_dependencies:
 	cd "${CC65_DIR}" && $(MAKE)
 
 sprite.rle:
-	/bin/python tools/utils/RLE.py -i sprite.chr -v -no-delta -o temp/sprite.rle
+	python3 tools/utils/RLE.py -i sprite.chr -v -no-delta -o temp/sprite.rle
 
 compile:
 	$(info Compling...)
