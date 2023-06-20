@@ -102,7 +102,7 @@ _music_play:
 @music_data_locations_hi:
 .byte >music_data_1_, >music_data_2_
 @music_counts:
-.byte $07, $FF  ;last bank is marked with an FF to always stop bank picking
+.byte $06, $FF  ;last bank is marked with an FF to always stop bank picking
 
 ;void __fastcall__ sfx_sample_play(unsigned char index);
 _sfx_sample_play:

@@ -72,7 +72,7 @@ void main(void) {
         if (pad1_new & PAD_B) {
             if (peppino_taunt_timer == 0){
                 rand = rand8();
-                sfx_sample_play(0x35);
+                sfx_sample_play(0x36);
                 peppino_taunt_timer = 15;
             }
         }
