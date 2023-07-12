@@ -16,10 +16,6 @@ jobs:
         uses: BSFishy/pip-action@v1
         with:
           packages: numpy
-      - name: Get curl because you need to get it separately fsr
-        run: sudo apt-get update && sudo apt-get install curl -y
-      - name: Get Dependencies (cc65)
-        run: make get_dependencies
       - name: Build the game
         run: make build
       - name: Start xvfb 

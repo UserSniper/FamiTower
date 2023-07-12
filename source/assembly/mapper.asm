@@ -114,10 +114,24 @@
         lda #1
         jmp mmc3_set_prg_bank_1
 
-; Every bank needs a reset method at the start to get the mapper to start in the right state. So, do that.
 .segment "DMC_BANK_00" 
     FAMISTUDIO_DPCM_OFF:
     .incbin "../../sound/bank0.dmc"
 .segment "DMC_BANK_01"
     .incbin "../../sound/bank1.dmc"
+
+.segment "ROM_BANK_03"
+    .byte $00
+.segment "ROM_BANK_04"
+    .byte $00
+.segment "ROM_BANK_05"
+    .byte $00
+.segment "ROM_BANK_06"
+    .byte $00
+.segment "ROM_BANK_07"
+    .byte $00
+.segment "ROM_BANK_08"
+    .byte $00
+.segment "ROM_BANK_09"
+    .byte $00
 
