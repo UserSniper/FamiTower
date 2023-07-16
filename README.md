@@ -1,5 +1,7 @@
-# PizzaTowerFamicom
-Pizza Tower Famicom is a demake of Pizza Tower on the Famicom written in C. The goal is to have the following:
+[![Build status](https://github.com/usersniper/FamiTower/actions/workflows/main.yml/badge.svg)](https://github.com/usersniper/FamiTower/actions/workflows/main.yml)
+
+# FamiTower
+FamiTower is a demake of Pizza Tower on the Famicom written in C. The goal is to have the following:
 - Title Screen
 - Floor 1
 - Full control scheme for Peppino

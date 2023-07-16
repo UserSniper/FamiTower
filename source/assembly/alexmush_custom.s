@@ -9,7 +9,6 @@ TILE_CNT    =TEMP+2
 ;RLE_BYTE    =TEMP+3
 FLAG_CNT    =TEMP+4
 BIT_IN_CNT  =TEMP+5
-BIT_OUT_CNT =TEMP+6
 RLE_FLAGS   =TEMP+7
 RLE_DELTA   =TEMP+8
 RLE_TEMPA   =TEMP+9
@@ -242,10 +241,9 @@ _unpack_tiles:
 @RLEDecompress:
     LDX #$03
     STX BIT_IN_CNT
-    INX
-    STX BIT_OUT_CNT
     LDX #$00
     STX <RLE_DELTA
+    INX
     STX <RLE_BYTE
     LDX #$0F
     LDA (PTR), Y
@@ -268,32 +266,33 @@ _unpack_tiles:
     ROL <RLE_BYTE   ;   Get the bit pair
     ASL             ;
     ROL <RLE_BYTE   ;
-    
+
+    BCC :+
+    ;Write the byte to the buffer
+    STA <RLE_TEMPA   ;Same as PHA
+    LDA <RLE_BYTE
+    STA decomp_buffer, X
+    ;Update counter
+    LDA #$01
+    STA <RLE_BYTE
+    LDA <RLE_TEMPA   ;Cheaper than PLA
+    DEX
+    BPL :+
+    JMP @RLEnd
+    :
+
     DEC BIT_IN_CNT
-    BNE :+
+    BNE @RLEDataPacketLoop
     ;Update counter
     LDA #$04
     STA BIT_IN_CNT
     ;Get new byte
     LDA (PTR), Y
     INY
-    BNE :+
-    INC <PTR+1
-    :
-
-    DEC BIT_OUT_CNT
     BNE @RLEDataPacketLoop
-    ;Write the byte to the buffer
-    STA <RLE_TEMPA   ;Same as PHA
-    LDA <RLE_BYTE
-    STA decomp_buffer, X
-    ;Update counter
-    LDA #$04
-    STA BIT_OUT_CNT
-    LDA <RLE_TEMPA   ;Cheaper than PLA
-    DEX
-    BPL @RLEDataPacketLoop
-    JMP @RLEnd
+    INC <PTR+1
+    JMP @RLEDataPacketLoop
+
 
 @RLEZeroPacketFromData:
     PLA
@@ -383,17 +382,16 @@ _unpack_tiles:
 ;Loop 1, possibly containing old data
 @RLEZeroPacketLoop1:
     ASL
-    ASL
     DEC <RLE_TEMPB
     BEQ @RLEZeroPacketToDataFromLoop1
-    DEC BIT_OUT_CNT
-    BNE @RLEZeroPacketLoop1
+    ASL
+    BCC @RLEZeroPacketLoop1
 ;Before Loop 2
     ;Write the byte to the buffer
     STA decomp_buffer, X
     ;Update counter
-    LDA #$04
-    STA BIT_OUT_CNT
+    LDA #$01
+    STA <RLE_BYTE
     DEX
     BMI @EndPLA
 ;Loop 2, just writing zeros:
@@ -440,25 +438,26 @@ _unpack_tiles:
 
 ;Loop 3, the remaining bits
 @RLEZeroPacketLoop3:
-    LDA #$00
+    TYA
+    LDY <RLE_TEMPB
+    STA <RLE_TEMPB
+    LDA @RemainBitsTable, Y
     STA <RLE_BYTE
-    LDA #$04
-    SEC
-    SBC <RLE_TEMPB
-    STA BIT_OUT_CNT
+    LDY <RLE_TEMPB
 @RLEZeroPacketToData:
     PLA
     JMP @RLEDataPacketLoop
 @RLEZeroPacketToDataFromLoop1:
+    ASL
     STA <RLE_BYTE
-    DEC BIT_OUT_CNT
-    BNE @RLEZeroPacketToData
+    BCC @RLEZeroPacketToData
     ;Write the byte to the buffer
     STA decomp_buffer, X
     ;Update counter
-    LDA #$04
-    STA BIT_OUT_CNT
+    LDA #$01
+    STA <RLE_BYTE
     DEX
     BMI @EndPLA
     JMP @RLEZeroPacketToData
-
+@RemainBitsTable:
+    .byte $01, $04, $10, $40
