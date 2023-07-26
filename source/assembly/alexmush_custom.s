@@ -254,8 +254,8 @@ _unpack_tiles:
     INC <PTR+1
 
 @RLEParseHeader:
-    ASL             ;Get delta encoding bit
-    ROL <RLE_DELTA
+    PHA
+    ASL             ;Delta encoding bit
     ASL             ;Get initial packet type
     BCC @RLEZeroPacket
 
@@ -420,8 +420,14 @@ _unpack_tiles:
     BNE :+
     DEC <PTR+1
     :
-    ;Put da data into VRAM
+    ;Delta decode if necessary
     LDX #$0F
+    PLA
+    ASL
+    BCC @Data_out
+    JSR @DeltaDecode
+@Data_out:
+    ;Put da data into VRAM
     :
     LDA decomp_buffer, X
     STA PPU_DATA
@@ -462,3 +468,27 @@ _unpack_tiles:
     BMI @EndPLA
     JMP @RLEZeroPacketToData
 
+
+@DeltaDecode:
+    LDA decomp_buffer, X
+    STA <RLE_BYTE
+    LDA #$00
+    STA <RLE_TEMPA
+    LDA #$01
+    @DeltaLoop:
+        ASL <RLE_BYTE
+        BCC :+
+            STA <RLE_TEMPB
+            LDA <RLE_TEMPA
+            EOR #$01
+            STA <RLE_TEMPA
+            LDA <RLE_TEMPB
+        :
+        ASL A
+        ORA <RLE_TEMPA
+        BCC @DeltaLoop
+        STA decomp_buffer, X
+        DEX
+        BPL @DeltaDecode
+    LDX #$0F
+    RTS
