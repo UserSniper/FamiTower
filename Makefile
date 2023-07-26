@@ -40,7 +40,7 @@ temp/main.c.asm: source/c/*.c
 	mkdir -p rom
 	"${CC65_DIR}/bin/cc65" -I . -Oi source/c/main.c --add-source --include-dir "${CC65_DIR}/include" -o temp/main.c.asm ${ARGS} ${CCARGS}
 
-temp/crt0.o: source/assembly/*.asm source/assembly/*.s
+temp/crt0.o: source/assembly/*.asm source/assembly/*.s sound/*.s sound/*.dmc temp/*.rle
 	$(info Assembling...)
 	"${CC65_DIR}/bin/ca65" -I . -o temp/crt0.o source/assembly/system-runtime.asm ${ARGS} ${CAARGS}
 temp/main.c.o: temp/main.c.asm

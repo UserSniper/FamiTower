@@ -60,7 +60,7 @@ void main(void) {
         if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
             ++songid;
-            if (songid > 0x0B) {
+            if (songid > 0x12) {
                 songid = 0x00;
             }
             famistudio_music_stop();

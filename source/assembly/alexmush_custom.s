@@ -71,7 +71,7 @@ _music_play:
     TYA
     PHA
     CLC
-    ADC #$0A
+    ADC #$09
     LDX #MMC3_REG_SEL_PRG_BANK_1
     JSR mmc3_internal_set_bank
     PLA
@@ -97,18 +97,18 @@ _music_play:
 
 
 @music_data_locations_lo:
-.byte <music_data_1_, <music_data_2_
+.byte <music1_data_, <music2_data_, <music3_data_
 @music_data_locations_hi:
-.byte >music_data_1_, >music_data_2_
+.byte >music1_data_, >music2_data_, >music3_data_
 @music_counts:
-.byte $06, $FF  ;last bank is marked with an FF to always stop bank picking
+.byte $07, $09, $FF  ;last bank is marked with an FF to always stop bank picking
 
 ;void __fastcall__ sfx_sample_play(unsigned char index);
 _sfx_sample_play:
     PHA
     LDA current_song_bank
     CLC
-    ADC #$0A
+    ADC #$09
     LDX #MMC3_REG_SEL_PRG_BANK_1
     JSR mmc3_internal_set_bank
     PLA

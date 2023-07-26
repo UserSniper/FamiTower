@@ -132,6 +132,4 @@
     .byte $00
 .segment "ROM_BANK_08"
     .byte $00
-.segment "ROM_BANK_09"
-    .byte $00
 
