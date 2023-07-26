@@ -239,15 +239,16 @@ _unpack_tiles:
 ;   2x bits - data in bit pairs
 ;   2 bits - terminating 00 pair
 @RLEDecompress:
-    LDX #$03
-    STX BIT_IN_CNT
+    STY <PTR
     LDX #$00
     STX <RLE_DELTA
     INX
     STX <RLE_BYTE
     LDX #$0F
-    LDA (PTR), Y
-    INY
+    LDY #$00
+    LDA (PTR), Y    ; Get new byte
+    LDY #$03
+    INC <PTR
     BNE @RLEParseHeader
     INC <PTR+1
 
@@ -278,17 +279,17 @@ _unpack_tiles:
     LDA <RLE_TEMPA   ;Cheaper than PLA
     DEX
     BPL :+
+    DEY
     JMP @RLEnd
     :
 
-    DEC BIT_IN_CNT
+    DEY
     BNE @RLEDataPacketLoop
-    ;Update counter
-    LDA #$04
-    STA BIT_IN_CNT
     ;Get new byte
-    LDA (PTR), Y
-    INY
+    LDY #$00
+    LDA (PTR), Y    ; Get new byte
+    LDY #$04    ; Update counter
+    INC <PTR
     BNE @RLEDataPacketLoop
     INC <PTR+1
     JMP @RLEDataPacketLoop
@@ -299,35 +300,26 @@ _unpack_tiles:
     ;Coming from data packet, remove the terminating 00 pair
     ASL
     ASL
-    DEC BIT_IN_CNT
+    DEY
     BNE @RLEZeroPacket
-    ;Update counter
-    LDA #$04
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
+    LDY #$00
+    LDA (PTR), Y    ; Get new byte
+    LDY #$04    ; Update counter
+    INC <PTR
     BNE @RLEZeroPacket
     INC <PTR+1
 @RLEZeroPacket:
     ;The IN counter used to count *pairs* of bits
     ;That's why this adjustment exists
-    ASL BIT_IN_CNT
+    STY <RLE_TEMPA
+    ASL <RLE_TEMPA
+    LDY <RLE_TEMPA
     STX <RLE_TEMPA   ;X is used for other purposes here
     LDX #$00
 @RLEZeroPacketLengthLoop:
-    DEC BIT_IN_CNT
+    DEY
     BPL :+
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE :+
-    INC <PTR+1
-    
+    JSR @FetchNewByte08
     :
     ASL
     INX
@@ -340,18 +332,9 @@ _unpack_tiles:
     PLA
 
 @RLEZeroPacketAdditionLoop:
-    DEC BIT_IN_CNT
+    DEY
     BPL :+
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE :+
-    INC <PTR+1
-    
+    JSR @FetchNewByte08
     :
     ASL
     ROL <RLE_TEMPB
@@ -359,22 +342,21 @@ _unpack_tiles:
     BNE @RLEZeroPacketAdditionLoop
 ;
 ;gotta do it again
-    DEC BIT_IN_CNT
+    DEY
     BPL @RLEZeroPacketZeroInsertion
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE @RLEZeroPacketZeroInsertion
-    INC <PTR+1
+    JSR @FetchNewByte08
     
 @RLEZeroPacketZeroInsertion:
-    INC <BIT_IN_CNT
-    LSR <BIT_IN_CNT
     LDX <RLE_TEMPA ;Recover X
+    
+    INY
+    STY <RLE_TEMPA
+    LSR <RLE_TEMPA 
+    LDY <RLE_TEMPA
+    BNE :+
+    JSR @FetchNewByte08
+    :
+    
     PHA
     DEC <RLE_TEMPB ;Decrement amount of bit pairs 
     BEQ @RLEZeroPacketToData
@@ -410,27 +392,30 @@ _unpack_tiles:
 @EndPLA:
     PLA
 @RLEnd:
-    LDA <BIT_IN_CNT
-    CMP #$04
+    CPY #$04
     BNE :+
-    DEY
-    CPY #$FF
+    DEC <PTR
+    LDA <PTR
+    CMP #$FF
     BNE :+
     DEC <PTR+1
     :
-    ;Delta decode if necessary
+    ; Get pointer back
+    LDY <PTR
+    LDA #$00
+    STA <PTR
+    ; Delta decode if necessary
     LDX #$0F
     PLA
     ASL
-    BCC @Data_out
+    BCC @DataOut
     JSR @DeltaDecode
-@Data_out:
+@DataOut:
     ;Put da data into VRAM
-    :
     LDA decomp_buffer, X
     STA PPU_DATA
     DEX
-    BPL :-
+    BPL @DataOut
     DEC <TILE_CNT
     BEQ @End2
     DEC <FLAG_CNT
@@ -466,29 +451,39 @@ _unpack_tiles:
     BMI @EndPLA
     JMP @RLEZeroPacketToData
 
-
 @DeltaDecode:
-    LDA decomp_buffer, X
-    STA <RLE_BYTE
     LDA #$00
     STA <RLE_TEMPA
-    LDA #$01
-    @DeltaLoop:
-        ASL <RLE_BYTE
-        BCC :+
-            STA <RLE_TEMPB
-            LDA <RLE_TEMPA
-            EOR #$01
-            STA <RLE_TEMPA
-            LDA <RLE_TEMPB
-        :
-        ASL A
-        ORA <RLE_TEMPA
-        BCC @DeltaLoop
-        STA decomp_buffer, X
-        DEX
-        BPL @DeltaDecode
+    @DeltaBigLoop:
+        LDA decomp_buffer, X
+        STA <RLE_BYTE
+        LDA #$01
+        @DeltaLoop:
+            ASL <RLE_BYTE
+            BCC :+
+                STA <RLE_TEMPB
+                LDA <RLE_TEMPA
+                EOR #$01
+                STA <RLE_TEMPA
+                LDA <RLE_TEMPB
+            :
+            ASL A
+            ORA <RLE_TEMPA
+            BCC @DeltaLoop
+            STA decomp_buffer, X
+            DEX
+            BPL @DeltaBigLoop
     LDX #$0F
+    RTS
+
+@FetchNewByte08:
+    LDY #$00
+    LDA (PTR), Y    ; Get new byte
+    LDY #$08    ; Update counter
+    INC <PTR
+    BNE :+
+        INC <PTR+1
+    :
     RTS
 
 @RemainBitsTable:

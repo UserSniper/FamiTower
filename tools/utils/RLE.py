@@ -2,7 +2,6 @@
 import math, os, sys
 from contextlib import contextmanager
 import numpy as np
-np.set_printoptions(formatter={'int':lambda x:f"{x:08b}"})
 
 @contextmanager
 def disable_exception_traceback():
@@ -106,7 +105,6 @@ def RLE_encode(data):
         bit_index += zpll
         currentPacketType = 1
         zeroPacketLength = 1
-        hasDifferentPacketTypes = True
     else:
         if DEBUG and QUIET:
             print(f"It ends on packet type data")
@@ -122,17 +120,19 @@ def RLE_encode(data):
 def delta_encode(data):
     #decompress data
     new_bits = np.zeros(128, np.uint8)
-    last_bit = 0
     for i in range(len(data)):
-        new_bits[i*8] = ((data[i]>>7) & 1) ^ last_bit
-        new_bits[i*8+1] = ((data[i]>>6) & 1) ^ new_bits[i*8]
-        new_bits[i*8+2] = ((data[i]>>5) & 1) ^ new_bits[i*8+1]
-        new_bits[i*8+3] = ((data[i]>>4) & 1) ^ new_bits[i*8+2]
-        new_bits[i*8+4] = ((data[i]>>3) & 1) ^ new_bits[i*8+3]
-        new_bits[i*8+5] = ((data[i]>>2) & 1) ^ new_bits[i*8+4]
-        new_bits[i*8+6] = ((data[i]>>1) & 1) ^ new_bits[i*8+5]
-        new_bits[i*8+7] = (data[i] & 1) ^ new_bits[i*8+6]
-        last_bit = new_bits[i*8+7]
+        new_bits[i*8] = ((data[i]>>7) & 1)
+        new_bits[i*8+1] = ((data[i]>>6) & 1)
+        new_bits[i*8+2] = ((data[i]>>5) & 1) 
+        new_bits[i*8+3] = ((data[i]>>4) & 1)
+        new_bits[i*8+4] = ((data[i]>>3) & 1) 
+        new_bits[i*8+5] = ((data[i]>>2) & 1)
+        new_bits[i*8+6] = ((data[i]>>1) & 1)
+        new_bits[i*8+7] = (data[i] & 1)
+    last_bit = 0
+    for i in range(len(new_bits)):
+        new_bits[i] ^= last_bit
+        last_bit ^= new_bits[i]
     out_bits = np.zeros(16, np.uint8)
     for i in range(len(out_bits)):
         out_bits[i] = new_bits[i*8]<<7 | new_bits[i*8+1]<<6 | new_bits[i*8+2]<<5 | new_bits[i*8+3]<<4 | new_bits[i*8+4]<<3 | new_bits[i*8+5]<<2 | new_bits[i*8+6]<<1 | new_bits[i*8+7]
@@ -150,14 +150,17 @@ if __name__ == '__main__':
     VERBOSE = "-v" in sys.argv
     SILENT = not "-s" in sys.argv
     QUIET = not "-q" in sys.argv and SILENT  #-s implies -q
-    if "-i" in sys.argv and len(sys.argv) > sys.argv.index("-i")+1 and sys.argv[sys.argv.index("-i")+1][0] != "-" and os.path.exists("graphics/"+sys.argv[sys.argv.index("-i")+1]):
+    PRINTRAW = "-print-raw" in sys.argv
+    FORMAT = not "-bin-debug" in sys.argv
+    np.set_printoptions(formatter={'int':lambda x:f"${x:02x}"} if FORMAT else {'int':lambda x:f"{x:08b}"})
+    if "-i" in sys.argv and len(sys.argv) > sys.argv.index("-i")+1 and sys.argv[sys.argv.index("-i")+1][0] != "-" and os.path.exists(sys.argv[sys.argv.index("-i")+1]):
         infile = sys.argv[sys.argv.index("-i")+1]
     else:
-        infile = input("Type in the file that needs to be compressed (in the graphics folder): ")
-    if not os.path.exists("graphics/"+infile):
+        infile = input("Type in the file that needs to be compressed: ")
+    if not os.path.exists(infile):
         with disable_exception_traceback():
-            raise FileNotFoundError("Hey m8 that file ("+str(os.path.abspath("graphics/"+infile))+") doesn't exist")
-    input_array = np.fromfile("graphics/"+infile, np.uint8)
+            raise FileNotFoundError("Hey m8 that file ("+str(os.path.abspath(infile))+") doesn't exist")
+    input_array = np.fromfile(infile, np.uint8)
 
     if "-l" in sys.argv and len(sys.argv) > sys.argv.index("-l")+1 and sys.argv[sys.argv.index("-l")+1].isnumeric() and int(sys.argv[sys.argv.index("-l")+1]) <= input_array.shape[0]>>4:
         length = int(sys.argv[sys.argv.index("-l")+1])
@@ -170,7 +173,7 @@ if __name__ == '__main__':
         output_file = open(sys.argv[sys.argv.index("-o")+1], "wb")
     elif "-o" in sys.argv and (len(sys.argv) > sys.argv.index("-o")+1 and sys.argv[sys.argv.index("-o")+1][0] == "-" or len(sys.argv) == sys.argv.index("-o")+1):
         OUTPUT = True
-        output_file = open("".join(os.path.splitext("graphics/"+infile)[0:-1])+".rle", "wb")
+        output_file = open("".join(os.path.splitext(infile)[0:-1])+".rle", "wb")
     else:
         OUTPUT = False
 
@@ -196,6 +199,8 @@ if __name__ == '__main__':
                     delta_stuff[1][0] |= 0x80
                     if QUIET:
                         print(f"Tile {h*8+i} compressed"+(" - "+str(delta_stuff[1][0:delta_stuff[2]]) if VERBOSE else "")+" with delta encoding - length "+str(delta_stuff[2]))
+                        if PRINTRAW:
+                            print(f"Delta data: {delta_encode(input_array[h*128+i*16:h*128+i*16+16])}")
                     if OUTPUT:
                         output_array = np.append(output_array,delta_stuff[1][0:delta_stuff[2]])
                     amount_of_delta += 1
@@ -208,6 +213,8 @@ if __name__ == '__main__':
                 delta_stuff[1][0] |= 0x80
                 if QUIET:
                     print(f"Tile {h*8+i} compressed"+(" - "+str(delta_stuff[1][0:delta_stuff[2]]) if VERBOSE else "")+" with delta encoding - length "+str(delta_stuff[2]))
+                    if PRINTRAW:
+                        print(f"Delta data: {delta_encode(input_array[h*128+i*16:h*128+i*16+16])}")
                 if OUTPUT:
                     output_array = np.append(output_array,delta_stuff[1][0:delta_stuff[2]])
                 amount_of_delta += 1
@@ -219,6 +226,8 @@ if __name__ == '__main__':
                 if OUTPUT:
                     output_array = np.append(output_array,input_array[h*128+i*16:h*128+i*16+16])
                     output_array[0] ^= (1 << (i ^ 7))
+            if PRINTRAW:
+                print(f"Raw data:   {input_array[h*128+i*16:h*128+i*16+16]}")
         if OUTPUT:
             output_file.write(output_array)
     total_sum += amount_of_flags

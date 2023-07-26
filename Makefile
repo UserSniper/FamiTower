@@ -18,7 +18,7 @@ build: cc65 gfx compile assemble link clean
 debug: cc65 gfx compile assemble link
 
 cc65: ${CC65_DIR}/bin/cc65
-gfx: temp/sprite.rle
+gfx: $(patsubst graphics/%.chr,temp/%.rle,$(wildcard graphics/*.chr))
 compile: temp/main.c.asm
 assemble: temp/crt0.o temp/main.c.o
 link: rom/pizza-tower-demo.nes
@@ -29,10 +29,10 @@ ${CC65_DIR}/bin/cc65:
 	wget -c "${CC65_URL}" -O - | tar -xz --strip-components=1 -C "${CC65_DIR}"
 	cd "${CC65_DIR}" && $(MAKE) -s
 
-temp/sprite.rle: graphics/sprite.chr
-	$(info Compressing sprite.chr...)
+temp/%.rle: graphics/%.chr
+	$(info Compressing $<...)
 	mkdir -p temp
-	python3 tools/utils/RLE.py -i sprite.chr -o temp/sprite.rle ${GFXARGS}
+	python3 tools/utils/RLE.py -i $< -o $@ ${GFXARGS}
 
 temp/main.c.asm: source/c/*.c
 	$(info Compling...)
@@ -50,4 +50,4 @@ rom/pizza-tower-demo.nes: temp/crt0.o temp/main.c.o config/ca65.cfg
 	$(info Linking...)
 	"${CC65_DIR}/bin/ld65" -o rom/pizza-tower-demo.nes -C config/ca65.cfg temp/crt0.o temp/main.c.o "${CC65_DIR}/lib/nes.lib" ${LDARGS}
 clean:
-	rm -R temp/
+	rm -rf temp/
