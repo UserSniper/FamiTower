@@ -148,7 +148,8 @@ if __name__ == '__main__':
     DELTA = not "-no-delta" in sys.argv
     DEBUG = "-d" in sys.argv
     VERBOSE = "-v" in sys.argv
-    QUIET = not "-q" in sys.argv
+    SILENT = not "-s" in sys.argv
+    QUIET = not "-q" in sys.argv and SILENT  #-s implies -q
     if "-i" in sys.argv and len(sys.argv) > sys.argv.index("-i")+1 and sys.argv[sys.argv.index("-i")+1][0] != "-" and os.path.exists("graphics/"+sys.argv[sys.argv.index("-i")+1]):
         infile = sys.argv[sys.argv.index("-i")+1]
     else:
@@ -221,7 +222,7 @@ if __name__ == '__main__':
         if OUTPUT:
             output_file.write(output_array)
     total_sum += amount_of_flags
-    if QUIET:
+    if SILENT:
         print(f"Total compressed size is {total_sum}, resulting in {((length*16)-total_sum)/(length*16)*100}% compression, with {amount_of_delta} tiles being delta encoded and {amount_of_raw} not compressed at all out of the total {length}.")
     if OUTPUT:
         output_file.close()

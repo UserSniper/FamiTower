@@ -1,4 +1,4 @@
-# Tools are installed by the get_dependencies sub-command
+# Tools are installed automatically
 tools/cc65
 temp
 # Run-length encoded files
@@ -6,5 +6,6 @@ temp
 # The output
 rom
 # the c
-bruh.wav
 CSV2C.py
+
+.vscode
