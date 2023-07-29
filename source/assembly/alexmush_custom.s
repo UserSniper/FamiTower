@@ -177,6 +177,7 @@ _oam_meta_spr_hflipped:
     txa
     rts
 
+
 ;Format:
 ;1 byte - amount of 8x8 tiles
 ;   Repeat amount of tiles / 8 times:
@@ -185,23 +186,23 @@ _oam_meta_spr_hflipped:
 
 ;void __fastcall__ unpack_tiles(const unsigned char* data);
 _unpack_tiles:
-    TAY
-    LDA #$00
+    LDY #$00
     STA <PTR
     STX <PTR+1
     ; Get total tile count
     LDA (PTR), Y
     STA <TILE_CNT
-    INY
+    INC <PTR
     BNE @GetRLEFlags
     INC <PTR+1
 
 @GetRLEFlags:
     LDA #$08
+    LDY #$00
     STA <FLAG_CNT
     LDA (PTR), Y
     STA <RLE_FLAGS
-    INY
+    INC <PTR
     BNE @NewTile
     INC <PTR+1
 
@@ -209,24 +210,28 @@ _unpack_tiles:
     ASL <RLE_FLAGS
     BCS @RLEDecompress
     LDX #$10
+    LDY #$00
     
 @NotCompressedLoop:
     LDA (PTR), Y
     STA PPU_DATA
-    INY
+    INC <PTR
     BNE :+
     INC <PTR+1
     :
     DEX
     BNE @NotCompressedLoop
+
     DEC <TILE_CNT
     BEQ @End
     DEC <FLAG_CNT
     BNE @NewTile
+
     JMP @GetRLEFlags
 
 @End:
     RTS
+
 
 ;RLE Format (based on 1st Gen Pokemon):
 ;1 bit - whether the data is delta-encoded
@@ -239,7 +244,6 @@ _unpack_tiles:
 ;   2x bits - data in bit pairs
 ;   2 bits - terminating 00 pair
 @RLEDecompress:
-    STY <PTR
     LDX #$00
     STX <RLE_DELTA
     INX
@@ -286,7 +290,6 @@ _unpack_tiles:
     DEY
     BNE @RLEDataPacketLoop
     ;Get new byte
-    LDY #$00
     LDA (PTR), Y    ; Get new byte
     LDY #$04    ; Update counter
     INC <PTR
@@ -302,7 +305,6 @@ _unpack_tiles:
     ASL
     DEY
     BNE @RLEZeroPacket
-    LDY #$00
     LDA (PTR), Y    ; Get new byte
     LDY #$04    ; Update counter
     INC <PTR
@@ -319,7 +321,12 @@ _unpack_tiles:
 @RLEZeroPacketLengthLoop:
     DEY
     BPL :+
-    JSR @FetchNewByte08
+    INY
+    LDA (PTR), Y    ; Get new byte
+    LDY #07    ; Update counter
+    INC <PTR
+    BNE :+
+        INC <PTR+1
     :
     ASL
     INX
@@ -334,30 +341,38 @@ _unpack_tiles:
 @RLEZeroPacketAdditionLoop:
     DEY
     BPL :+
-    JSR @FetchNewByte08
+    INY
+    LDA (PTR), Y    ; Get new byte
+    LDY #$07    ; Update counter
+    INC <PTR
+    BNE :+
+        INC <PTR+1
+
     :
     ASL
     ROL <RLE_TEMPB
     DEX
     BNE @RLEZeroPacketAdditionLoop
-;
+
+
 ;gotta do it again
-    DEY
-    BPL @RLEZeroPacketZeroInsertion
-    JSR @FetchNewByte08
+    TSX ; Useful if needed to cancel PHA, X is already unused
+    PHA
+    TYA
+    LSR A
+    TAY
+    BNE @RLEZeroPacketZeroInsertion
     
+    TXS ; Cancel the PHA
+    LDA (PTR), Y    ; Get new byte
+    PHA
+    LDY #$04    ; Update counter
+    INC <PTR
+    BNE @RLEZeroPacketZeroInsertion
+        INC <PTR+1
+
 @RLEZeroPacketZeroInsertion:
     LDX <RLE_TEMPA ;Recover X
-    
-    INY
-    STY <RLE_TEMPA
-    LSR <RLE_TEMPA 
-    LDY <RLE_TEMPA
-    BNE :+
-    JSR @FetchNewByte08
-    :
-    
-    PHA
     DEC <RLE_TEMPB ;Decrement amount of bit pairs 
     BEQ @RLEZeroPacketToData
     LDA <RLE_BYTE
@@ -400,16 +415,10 @@ _unpack_tiles:
     BNE :+
     DEC <PTR+1
     :
-    ; Get pointer back
-    LDY <PTR
-    LDA #$00
-    STA <PTR
     ; Delta decode if necessary
     LDX #$0F
     PLA
-    ASL
-    BCC @DataOut
-    JSR @DeltaDecode
+    BMI @DeltaDecode
 @DataOut:
     ;Put da data into VRAM
     LDA decomp_buffer, X
@@ -474,17 +483,7 @@ _unpack_tiles:
             DEX
             BPL @DeltaBigLoop
     LDX #$0F
-    RTS
-
-@FetchNewByte08:
-    LDY #$00
-    LDA (PTR), Y    ; Get new byte
-    LDY #$08    ; Update counter
-    INC <PTR
-    BNE :+
-        INC <PTR+1
-    :
-    RTS
+    JMP @DataOut
 
 @RemainBitsTable:
     .byte $01, $04, $10, $40
