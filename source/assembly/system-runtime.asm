@@ -13,6 +13,7 @@
 .include "./system-defines.asm"
 .include "./mapper.asm"
 .include "./alexmush_custom.s"
+.include "./PokRLE.s"
 
 ;
 ; iNES header
