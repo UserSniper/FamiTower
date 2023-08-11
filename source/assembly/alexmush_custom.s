@@ -1,21 +1,7 @@
     .export _enable_grayscale, _toggle_grayscale, _disable_grayscale
     .export famistudio_dpcm_bank_callback, _music_play, _sfx_sample_play
     .export _oam_meta_spr_hflipped
-    .export _unpack_tiles
 
-.SEGMENT "ZEROPAGE"
-
-TILE_CNT    =TEMP+2
-;RLE_BYTE    =TEMP+3
-FLAG_CNT    =TEMP+4
-BIT_IN_CNT  =TEMP+5
-RLE_FLAGS   =TEMP+7
-RLE_DELTA   =TEMP+8
-RLE_TEMPA   =TEMP+9
-RLE_TEMPB   =TEMP+10
-
-.segment "BSS"
-    decomp_buffer: .res 16  ;For GFX RLE
 
 .SEGMENT "CODE"
 
@@ -71,7 +57,7 @@ _music_play:
     TYA
     PHA
     CLC
-    ADC #$0A
+    ADC #$09
     LDX #MMC3_REG_SEL_PRG_BANK_1
     JSR mmc3_internal_set_bank
     PLA
@@ -97,18 +83,18 @@ _music_play:
 
 
 @music_data_locations_lo:
-.byte <music_data_1_, <music_data_2_
+.byte <music1_data_, <music2_data_, <music3_data_
 @music_data_locations_hi:
-.byte >music_data_1_, >music_data_2_
+.byte >music1_data_, >music2_data_, >music3_data_
 @music_counts:
-.byte $06, $FF  ;last bank is marked with an FF to always stop bank picking
+.byte $07, $09, $FF  ;last bank is marked with an FF to always stop bank picking
 
 ;void __fastcall__ sfx_sample_play(unsigned char index);
 _sfx_sample_play:
     PHA
     LDA current_song_bank
     CLC
-    ADC #$0A
+    ADC #$09
     LDX #MMC3_REG_SEL_PRG_BANK_1
     JSR mmc3_internal_set_bank
     PLA
@@ -176,288 +162,3 @@ _oam_meta_spr_hflipped:
 
     txa
     rts
-
-;Format:
-;1 byte - amount of 8x8 tiles
-;   Repeat amount of tiles / 8 times:
-;1 byte - flags whether the tile is stored as raw data or RLE encoded
-;X bytes - actual data
-
-;void __fastcall__ unpack_tiles(const unsigned char* data);
-_unpack_tiles:
-    TAY
-    LDA #$00
-    STA <PTR
-    STX <PTR+1
-    ; Get total tile count
-    LDA (PTR), Y
-    STA <TILE_CNT
-    INY
-    BNE @GetRLEFlags
-    INC <PTR+1
-
-@GetRLEFlags:
-    LDA #$08
-    STA <FLAG_CNT
-    LDA (PTR), Y
-    STA <RLE_FLAGS
-    INY
-    BNE @NewTile
-    INC <PTR+1
-
-@NewTile:
-    ASL <RLE_FLAGS
-    BCS @RLEDecompress
-    LDX #$10
-    
-@NotCompressedLoop:
-    LDA (PTR), Y
-    STA PPU_DATA
-    INY
-    BNE :+
-    INC <PTR+1
-    :
-    DEX
-    BNE @NotCompressedLoop
-    DEC <TILE_CNT
-    BEQ @End
-    DEC <FLAG_CNT
-    BNE @NewTile
-    JMP @GetRLEFlags
-
-@End:
-    RTS
-
-;RLE Format (based on 1st Gen Pokemon):
-;1 bit - whether the data is delta-encoded
-;1 bit - starting packet type (0 if zero, 1 if data)
-;variable - actual data:
-;   Zero packet:
-;   x bits - 1s ending with a 0, specifies the length of the following number
-;   x bits - amount of 00 pairs + 1 with the leading bit stripped
-;   Data packet:
-;   2x bits - data in bit pairs
-;   2 bits - terminating 00 pair
-@RLEDecompress:
-    LDX #$03
-    STX BIT_IN_CNT
-    LDX #$00
-    STX <RLE_DELTA
-    INX
-    STX <RLE_BYTE
-    LDX #$0F
-    LDA (PTR), Y
-    INY
-    BNE @RLEParseHeader
-    INC <PTR+1
-
-@RLEParseHeader:
-    ASL             ;Get delta encoding bit
-    ROL <RLE_DELTA
-    ASL             ;Get initial packet type
-    BCC @RLEZeroPacket
-
-@RLEDataPacketLoop:
-    PHA
-    AND #$C0
-    BEQ @RLEZeroPacketFromData
-    PLA
-    ASL             ;
-    ROL <RLE_BYTE   ;   Get the bit pair
-    ASL             ;
-    ROL <RLE_BYTE   ;
-
-    BCC :+
-    ;Write the byte to the buffer
-    STA <RLE_TEMPA   ;Same as PHA
-    LDA <RLE_BYTE
-    STA decomp_buffer, X
-    ;Update counter
-    LDA #$01
-    STA <RLE_BYTE
-    LDA <RLE_TEMPA   ;Cheaper than PLA
-    DEX
-    BPL :+
-    JMP @RLEnd
-    :
-
-    DEC BIT_IN_CNT
-    BNE @RLEDataPacketLoop
-    ;Update counter
-    LDA #$04
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE @RLEDataPacketLoop
-    INC <PTR+1
-    JMP @RLEDataPacketLoop
-
-
-@RLEZeroPacketFromData:
-    PLA
-    ;Coming from data packet, remove the terminating 00 pair
-    ASL
-    ASL
-    DEC BIT_IN_CNT
-    BNE @RLEZeroPacket
-    ;Update counter
-    LDA #$04
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE @RLEZeroPacket
-    INC <PTR+1
-@RLEZeroPacket:
-    ;The IN counter used to count *pairs* of bits
-    ;That's why this adjustment exists
-    ASL BIT_IN_CNT
-    STX <RLE_TEMPA   ;X is used for other purposes here
-    LDX #$00
-@RLEZeroPacketLengthLoop:
-    DEC BIT_IN_CNT
-    BPL :+
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE :+
-    INC <PTR+1
-    
-    :
-    ASL
-    INX
-    BCS @RLEZeroPacketLengthLoop
-
-@RLEZeroPacketAddition:
-    PHA
-    LDA #$01
-    STA <RLE_TEMPB
-    PLA
-
-@RLEZeroPacketAdditionLoop:
-    DEC BIT_IN_CNT
-    BPL :+
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE :+
-    INC <PTR+1
-    
-    :
-    ASL
-    ROL <RLE_TEMPB
-    DEX
-    BNE @RLEZeroPacketAdditionLoop
-;
-;gotta do it again
-    DEC BIT_IN_CNT
-    BPL @RLEZeroPacketZeroInsertion
-    ;
-    ;Update counter
-    LDA #$08
-    STA BIT_IN_CNT
-    ;Get new byte
-    LDA (PTR), Y
-    INY
-    BNE @RLEZeroPacketZeroInsertion
-    INC <PTR+1
-    
-@RLEZeroPacketZeroInsertion:
-    INC <BIT_IN_CNT
-    LSR <BIT_IN_CNT
-    LDX <RLE_TEMPA ;Recover X
-    PHA
-    DEC <RLE_TEMPB ;Decrement amount of bit pairs 
-    BEQ @RLEZeroPacketToData
-    LDA <RLE_BYTE
-;Loop 1, possibly containing old data
-@RLEZeroPacketLoop1:
-    ASL
-    DEC <RLE_TEMPB
-    BEQ @RLEZeroPacketToDataFromLoop1
-    ASL
-    BCC @RLEZeroPacketLoop1
-;Before Loop 2
-    ;Write the byte to the buffer
-    STA decomp_buffer, X
-    ;Update counter
-    LDA #$01
-    STA <RLE_BYTE
-    DEX
-    BMI @EndPLA
-;Loop 2, just writing zeros:
-@RLEZeroPacketLoop2:
-    LDA <RLE_TEMPB
-    CMP #$04
-    BMI @RLEZeroPacketLoop3
-    SEC
-    SBC #$04
-    STA <RLE_TEMPB
-    LDA #$00
-    STA decomp_buffer, X
-    DEX
-    BPL @RLEZeroPacketLoop2
-
-@EndPLA:
-    PLA
-@RLEnd:
-    LDA <BIT_IN_CNT
-    CMP #$04
-    BNE :+
-    DEY
-    CPY #$FF
-    BNE :+
-    DEC <PTR+1
-    :
-    ;Put da data into VRAM
-    LDX #$0F
-    :
-    LDA decomp_buffer, X
-    STA PPU_DATA
-    DEX
-    BPL :-
-    DEC <TILE_CNT
-    BEQ @End2
-    DEC <FLAG_CNT
-    BNE @NewTileJMP
-    JMP @GetRLEFlags
-@End2:
-    RTS
-@NewTileJMP:
-    JMP @NewTile
-
-
-;Loop 3, the remaining bits
-@RLEZeroPacketLoop3:
-    TYA
-    LDY <RLE_TEMPB
-    STA <RLE_TEMPB
-    LDA @RemainBitsTable, Y
-    STA <RLE_BYTE
-    LDY <RLE_TEMPB
-@RLEZeroPacketToData:
-    PLA
-    JMP @RLEDataPacketLoop
-@RLEZeroPacketToDataFromLoop1:
-    ASL
-    STA <RLE_BYTE
-    BCC @RLEZeroPacketToData
-    ;Write the byte to the buffer
-    STA decomp_buffer, X
-    ;Update counter
-    LDA #$01
-    STA <RLE_BYTE
-    DEX
-    BMI @EndPLA
-    JMP @RLEZeroPacketToData
-@RemainBitsTable:
-    .byte $01, $04, $10, $40

@@ -124,7 +124,7 @@ neslib_nmi:
 
     LDA current_song_bank
     CLC
-    ADC #$0A
+    ADC #$09
     LDX #MMC3_REG_SEL_PRG_BANK_1
     JSR mmc3_internal_set_bank
 

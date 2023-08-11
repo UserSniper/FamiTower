@@ -12,25 +12,7 @@
 void main(void) {
     // Turn off the screen
     ppu_off();
-    //Do a CHR ROM equivalent (TODO: actual usefulness for CHR RAM)
-    mmc3_set_2kb_chr_bank_0(0);
-    mmc3_set_2kb_chr_bank_1(2);
-    mmc3_set_1kb_chr_bank_0(4);
-    mmc3_set_1kb_chr_bank_1(5);
-    mmc3_set_1kb_chr_bank_2(6);
-    mmc3_set_1kb_chr_bank_3(7);
-    mmc3_set_prg_bank_1(2);
-    vram_adr(0x1000);
-    unpack_tiles ((unsigned char *) compressed_test);
 
-    mmc3_set_prg_bank_1(1);
-    vram_adr(0x0000);
-    vram_write((unsigned char *)background_graphics, 0x1000);
-
-    mmc3_set_prg_bank_1(0);
-    which_bg = 0;
-    vram_adr(NAMETABLE_A);
-    vram_write((unsigned char *)Collision_Maps[which_bg], 1024);
 
     // Set the address of the ppu to $3f00 to set the background palette
     vram_adr(0x3F00);
@@ -38,6 +20,24 @@ void main(void) {
     for (i = 0; i != 32; ++i) {
         POKE(PPU_DATA,palette[i]);
     }
+    
+    //Do a CHR ROM equivalent (TODO: actual usefulness for CHR RAM)
+    mmc3_set_2kb_chr_bank_0(0);
+    mmc3_set_2kb_chr_bank_1(2);
+    mmc3_set_1kb_chr_bank_0(4);
+    mmc3_set_1kb_chr_bank_1(5);
+    mmc3_set_1kb_chr_bank_2(6);
+    mmc3_set_1kb_chr_bank_3(7);
+    mmc3_set_prg_bank_1(1);
+    vram_adr(0x0000);
+    unpack_tiles ((unsigned char *) background_graphics);
+    vram_adr(0x1000);
+    unpack_tiles ((unsigned char *) sprite_graphics);
+
+    mmc3_set_prg_bank_1(0);
+    which_bg = 0;
+    vram_adr(NAMETABLE_A);
+    vram_write((unsigned char *)Collision_Maps[which_bg], 1024);
 
     // Set the scroll to 0,0
     scroll(0, 0);
@@ -60,7 +60,7 @@ void main(void) {
         if (pad1_new & PAD_A) { // If the user is pressing A, make a sound!
             // Play sound effect 0 on channel 0 (second argument can be 0-3, lower is higher priority)
             ++songid;
-            if (songid > 0x0B) {
+            if (songid > 0x12) {
                 songid = 0x00;
             }
             famistudio_music_stop();
